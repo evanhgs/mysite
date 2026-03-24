@@ -2,6 +2,7 @@
 import BaseHead from '@components/BaseHead.astro';
 import Footer from '@components/Footer.astro';
 import Header from '@components/Header.astro';
+import HoverText from '@components/HoverText.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@const';
 ---
 
@@ -13,33 +14,34 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '@const';
 	<body>
 		<Header />
 		<main>
-			<h1>Salut salut !</h1>
+			<h1>Bonjour à tous et à toutes !</h1>
 			<p>
-				Bienvenue sur mon site
+				Bienvenue sur mon site, ici je vais vous présenter sous forme de blog mes projets 
+				perso et mes comptes rendus de cyber sécurité de mes premiers jusqu'à aujourd'hui
 			</p>
 			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
+				Je suis un jeune développeur informatique ayant fait un BUT informatique (bac +3),
+				je code principalement des app avec les langages <code>python</code>, 
+				<code>typescript</code>, <code>php</code> et <code>rust</code> je maitrise les 
+				framework tel que <code>Flask</code>, <code>FastApi</code>, <code>NextJS</code> et <code>Symfony</code> 	
 			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
+			<p>Voici quelques projets pour vous donner une idée de ce que je sais faire</p>
 			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
+				<li><HoverText hoverText="Les SAE sont des gros projets scolaire de fin d'année">SAE</HoverText> 5 aramis</li>
+				<li>Rmce qui est une application mobile de course de voiture</li>
+				<li>Valenstagram une copie d'instagram pour l'apprentissage technique</li>
+				<li>Telebox une app python pour scrapper des membres sur Telegram</li>
+				<li>Turbo selector une api pour optimiser la sélection de n joueur selon x paramètres</li>
+				<li>Dashdust qui est un dashboard de serveur simple, très puissant et moderne, optimisé en Rust et wasm</li>
+				<li>Wipytest une app de scanning passive de wifi et d'analyse de vulnérabilité</li>
 			</ul>
 			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
+				Par ailleurs j'adore le<HoverText hoverText="Applications auto hébergées sur mon nas">Self Hosting</HoverText>
+				je m'amuse à host pleins d'application et développer des architectures de production sur mon serveur perso
 			</p>
 			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
+				Et enfin je suis fan de cybersécurité, j'ai un compte <code>Rootme</code> et <code>HackTheBox</code>
+				hésitez pas à regarder mon profil pour voir mes compétence dans les domaines ou lesquels j'ai performé
 			</p>
 		</main>
 		<Footer />

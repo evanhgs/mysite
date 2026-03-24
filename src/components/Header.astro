@@ -1,6 +1,6 @@
 ---
 import HeaderLink from '@components/HeaderLink.astro';
-import {SITE_TITLE, GITHUB_LINK, LINKEDIN_LINK, MASTODON} from '@const';
+import {SITE_TITLE, GITHUB_LINK, LINKEDIN_LINK, HTB_LINK} from '@const';
 const path = Astro.url.pathname;
 const alt = path.startsWith('/fr') ? path.replace('/fr', '/en') : path.replace('/en', '/fr');
 ---
@@ -14,7 +14,7 @@ const alt = path.startsWith('/fr') ? path.replace('/fr', '/en') : path.replace('
 			<HeaderLink href="about">About</HeaderLink>
 		</div>
 		<div class="social-links">
-			<a href={MASTODON} target="_blank">
+			<a href={HTB_LINK} target="_blank">
 				<span class="sr-only">Follow Astro on Mastodon</span>
 				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
 					><path
