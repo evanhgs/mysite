@@ -1,6 +1,8 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+const path = Astro.url.pathname;
+const alt = path.startsWith('/fr') ? path.replace('/fr', '/en') : path.replace('/en', '/fr');
 ---
 
 <header>
@@ -39,8 +41,10 @@ import HeaderLink from './HeaderLink.astro';
 					></path></svg
 				>
 			</a>
+			<a href={alt}>🇫🇷 / 🇬🇧</a>
 		</div>
 	</nav>
+	
 </header>
 <style>
 	header {

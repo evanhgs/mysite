@@ -20,4 +20,11 @@ export default defineConfig({
 	security: {
 		csp: true
 	},
+	i18n: {
+		locales: ["fr", "en", "es"],
+		defaultLocale: "fr",
+		routing: {
+			prefixDefaultLocale: true
+		}
+	}
 });
