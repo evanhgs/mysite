@@ -1,34 +1,97 @@
 ---
-const { hoverText } = Astro.props
---- 
+interface Props {
+  hoverText: string;
+}
+
+const { hoverText } = Astro.props as Props;
+---
+
+<span class="tooltip-wrap" tabindex="0" aria-label={hoverText}>
+  <span class="tooltip-trigger">
+    <slot />
+  </span>
+  <span class="tooltip-box" role="tooltip">
+    {hoverText}
+  </span>
+</span>
+
 <style>
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-  cursor: pointer;
-}
+  .tooltip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    cursor: help;
+    outline: none;
+  }
 
-.tooltiptext {
-  visibility: hidden;
-  width: 130px;
-  background-color: black;
-  color: #ffffff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-  position: absolute;
-  z-index: 1;
-}
+  .tooltip-trigger {
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.15em;
+    text-decoration-color: color-mix(in srgb, var(--accent), transparent 35%);
+  }
 
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
+  .tooltip-box {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.55rem);
+    transform: translateX(-50%) translateY(4px);
+    min-width: 12rem;
+    max-width: 20rem;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid color-mix(in srgb, var(--black), white 70%);
+    border-radius: 0.55rem;
+    background: #fff;
+    color: var(--black);
+    box-shadow: 0 10px 24px rgba(var(--black), 0.12);
+    font-size: 0.82rem;
+    line-height: 1.35;
+    white-space: normal;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease, transform 150ms ease, visibility 150ms;
+    z-index: 10;
+  }
+
+  .tooltip-box::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+    filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--black), white 70%));
+  }
+
+  .tooltip-wrap:hover .tooltip-box,
+  .tooltip-wrap:focus-visible .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .tooltip-wrap:focus-visible .tooltip-trigger {
+    text-decoration-color: var(--accent);
+  }
+
+  @media (max-width: 560px) {
+    .tooltip-box {
+      left: 0;
+      transform: translateX(0) translateY(4px);
+      max-width: min(85vw, 18rem);
+    }
+
+    .tooltip-wrap:hover .tooltip-box,
+    .tooltip-wrap:focus-visible .tooltip-box {
+      transform: translateX(0) translateY(0);
+    }
+
+    .tooltip-box::after {
+      left: 1rem;
+    }
+  }
 </style>
-
-<div class="tooltip">
-    <slot/>
-    <p class="tooltiptext">
-        {hoverText}
-    </p>
-</div>
