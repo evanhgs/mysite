@@ -1,0 +1,9 @@
+---
+title: 'Premier blog dune longue série'
+description: 'Mon premier projet sérieux: Telebox'
+pubDate: '24 mars 2026'
+heroImage: '@assets/blog-placeholder-3.jpg'
+---
+When I was starting out in programming I loved python and I did everything with it, site, application, scripts...
+And I was working with people who needed to grow groups on Telegram to improve their visibility and I turned to the Telegram API to see what we could do, I had heard that we could automatically add members to a group from a csv list and a Telegram account, so I started by making a cli to launch commands and execute scripts which allows you to connect to telegram and retrieve members in public groups, store them and then add them to the desired group. Good rgpd level we can discuss this again later IHRIHR Then I found the cli impractical because my goal was to sell licenses and to market my app you need an application accessible to all types of users. My strategy was to refactor my application to review the way of programming (my beginnings in object-oriented programming) I had to completely review separating my business logic into classes and for the frontend of the desktop application I turned to custom tkinter (a modded version) because I personally find tkinter terrible, I spent several weeks coding on the app to refacotorize my functionalities, alongside that I developed a dynamic website with flask to manage license keys, authentication, payments with stripe. I spent several months in total making the site and the application to finally sell a single license to a random guy:D
+So a very unprofitable job financially but which allowed me to find a place in an internship within an ESN in Lyon because the fact that I am proactive and motivated pleased my employers. The application is now open source and accessible to everyone and still functional:D [Telebox](https://github.com/evanhgs/Telegram-scraper-adder-app)
