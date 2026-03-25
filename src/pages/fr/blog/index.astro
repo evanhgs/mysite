@@ -7,8 +7,7 @@ import FormattedDate from '@components/FormattedDate.astro';
 import Header from '@components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@const';
 
-const locale = 'fr';
-const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${locale}/blog/`)))
+const posts = (await getCollection('blog', ({ id }) => id.startsWith(`fr/blog/`)))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
@@ -96,7 +95,7 @@ const posts = (await getCollection('blog', ({ id }) => id.startsWith(`${locale}/
 							// id format: "fr/blog/my-post", keep only the final slug segment
 							// so links stay as /fr/blog/my-post/
 							<li>
-								<a href={`/${locale}/blog/${post.id.split('/').pop()}/`}>
+								<a href={`/fr/blog/${post.id.split('/').pop()}/`}>
 									{post.data.heroImage && (
 										<Image width={720} height={360} src={post.data.heroImage} alt="" />
 									)}

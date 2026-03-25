@@ -2,16 +2,17 @@
 import HeaderLink from '@components/HeaderLink.astro';
 import {SITE_TITLE, GITHUB_LINK, LINKEDIN_LINK, HTB_LINK} from '@const';
 const path = Astro.url.pathname;
+const localePrefix = path.startsWith('/fr') ? '/fr' : '/en';
 const alt = path.startsWith('/fr') ? path.replace('/fr', '/en') : path.replace('/en', '/fr');
 ---
 
 <header>
 	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
+		<h2><a href={localePrefix}>{SITE_TITLE}</a></h2>
 		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href='blog'>Blog</HeaderLink>
-			<HeaderLink href="about">About</HeaderLink>
+			<HeaderLink href={localePrefix}>Home</HeaderLink>
+			<HeaderLink href={`${localePrefix}/blog`}>Blog</HeaderLink>
+			<HeaderLink href={`${localePrefix}/about`}>About</HeaderLink>
 		</div>
 		<div class="social-links">
 			<a href={HTB_LINK} target="_blank">
