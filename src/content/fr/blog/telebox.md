@@ -1,5 +1,5 @@
 ---
-title: 'Premier blog dune longue série'
+title: 'Telebox'
 description: 'Mon premier projet sérieux: Telebox'
 pubDate: '24 mars 2026'
 heroImage: '@assets/blog-placeholder-3.jpg'
