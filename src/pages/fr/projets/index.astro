@@ -1,0 +1,50 @@
+---
+import BaseHead from "@components/BaseHead.astro";
+import Footer from "@components/Footer.astro";
+import Header from "@components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@const";
+---
+
+<!doctype html>
+<html lang="fr">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+        <style>
+            table {
+                background-color: aqua;
+            }
+        </style>
+    </head>
+    <body>
+        <Header />
+        <main>
+            <table>
+                <tr>
+                    <th>Projets</th>
+                    <th>Descriptions</th>
+                    <th>Liens</th>
+                </tr>
+                <tr>
+                    <td>Sae 5 aramis</td>
+                    <td
+                        >Application web de gestion de picking entrepôt
+                        (Next.js/PostgreSQL) permettant aux préparateurs de
+                        traiter des supports guidés par reconnaissance vocale et
+                        visualisation 3D, et aux superviseurs de piloter en
+                        temps réel l'activité, les stocks et les manquants.</td
+                    >
+                    <td>https://gitlab.iut-valence.fr/huguesev/sae5_aramis</td>
+                </tr>
+                <tr>
+                    <td>Rmce - racing map course and ego</td>
+                    <td>/</td>
+                    <td
+                        >Api : https://github.com/evanhgs/rust-rmce-api App
+                        mobile : https://github.com/evanhgs/rmce_app
+                    </td>
+                </tr>
+            </table>
+        </main>
+        <Footer />
+    </body>
+</html>
