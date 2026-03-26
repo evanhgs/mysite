@@ -10,15 +10,28 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "@const";
     <head>
         <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
         <style>
-            table {
-                background-color: aqua;
+            .tableau {
+                border-collapse: collapse;
+                margin: 25px 0;
+                font-size: 0.9em;
+                font-family: sans-serif;
+                min-width: 400px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            }
+            .tableau thead tr {
+                background-color: #009879;
+                color: #ffffff;
+                text-align: left;
+            }
+            .tableau th {
+                padding: 12px 15px;
             }
         </style>
     </head>
     <body>
         <Header />
         <main>
-            <table>
+            <table class="tableau">
                 <tr>
                     <th>Projets</th>
                     <th>Descriptions</th>
