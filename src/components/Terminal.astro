@@ -1,0 +1,418 @@
+---
+import type { SiteContent } from '../data/content';
+import '../styles/terminal.css';
+
+interface Post {
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: string;
+  body: string;
+  isMdx: boolean;
+}
+
+interface Props {
+  lang: 'fr' | 'en';
+  posts: Post[];
+  siteContent: SiteContent;
+}
+
+const { lang, posts, siteContent } = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <title>evan@portfolio:~$</title>
+  <meta name="description" content={lang === 'fr'
+    ? 'Portfolio interactif de Evan Hugues - développeur et passionné de cybersécurité'
+    : 'Interactive portfolio of Evan Hugues - developer and cybersecurity enthusiast'} />
+  <meta property="og:title" content="evan@portfolio" />
+  <meta property="og:type" content="website" />
+</head>
+<body>
+  <div id="terminal">
+    <div id="output" aria-live="polite"></div>
+    <div id="input-line">
+      <span id="prompt">evan@portfolio:~$&nbsp;</span>
+      <input
+        id="cmd-input"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-label={lang === 'fr' ? 'Saisie de commande' : 'Command input'}
+      />
+    </div>
+  </div>
+
+  <script define:vars={{ __posts: posts, __content: siteContent, __lang: lang }}>
+    window.__T__ = { posts: __posts, content: __content, lang: __lang };
+  </script>
+
+  <script>
+    const { posts: POSTS, content: CONTENT, lang: LANG } =
+      (window as any).__T__ as { posts: any[], content: any, lang: 'fr' | 'en' };
+
+    const output = document.getElementById('output')!;
+    const input  = document.getElementById('cmd-input') as HTMLInputElement;
+
+
+    const history: string[] = [];
+    let   historyIndex = -1;
+
+    function appendLine(text: string, cls = 'line-output') {
+      const div = document.createElement('div');
+      div.className = cls;
+      div.textContent = text;
+      output.appendChild(div);
+    }
+
+    function appendHTML(html: string, cls = 'line-output') {
+      const div = document.createElement('div');
+      div.className = cls;
+      div.innerHTML = html;
+      output.appendChild(div);
+    }
+
+    function blank() { appendLine(''); }
+
+    function scrollBottom() {
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function stripMd(md: string): string {
+      return md
+        .replace(/^---[\s\S]*?^---/m, '')
+        .replace(/^#{1,6}\s+/gm, '')
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/`{3}[\s\S]*?`{3}/g, '')
+        .replace(/`([^`]*)`/g, '$1')
+        .replace(/<[^>]+>/g, '')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/^[-*+]\s+/gm, '  • ')
+        .replace(/^\d+\.\s+/gm, '  ')
+        .replace(/^>\s*/gm, '  │ ')
+        .replace(/^-{3,}$/gm, '-'.repeat(50))
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+    }
+
+    function cmdHelp() {
+      CONTENT.help.forEach((l: string) => appendLine(l));
+    }
+
+    function cmdWhoami() {
+      appendLine(CONTENT.whoami, 'line-title');
+    }
+
+    function cmdAbout() {
+      CONTENT.about.forEach((l: string) => appendLine(l));
+    }
+
+    function cmdSkills() {
+      const s = CONTENT.skills;
+      const pad = (label: string) => label.padEnd(14);
+      blank();
+      appendLine(pad('  LANGAGES')   + s.languages.join('   '), 'line-title');
+      appendLine(pad('  FRAMEWORKS') + s.frameworks.join('   '), 'line-output');
+      appendLine(pad('  OUTILS')     + s.tools.join('   '), 'line-output');
+      blank();
+    }
+
+    function cmdProjects() {
+      blank();
+      CONTENT.projects.forEach((p: any, i: number) => {
+        const num = String(i + 1).padStart(2, ' ');
+        appendLine(`  [${num}]  ${p.id.padEnd(20)} ${p.name}`, 'line-output');
+      });
+      blank();
+      appendLine(LANG === 'fr'
+        ? "  -> 'project <id>' pour les détails   ex: project telebox"
+        : "  -> 'project <id>' for details        e.g. project telebox", 'line-dim');
+      blank();
+    }
+
+    function cmdProject(args: string[]) {
+      const id = args[0]?.toLowerCase();
+      if (!id) {
+        appendLine(LANG === 'fr'
+          ? "Usage: project <id>  (tapez 'projects' pour la liste)"
+          : "Usage: project <id>  (type 'projects' for the list)", 'line-error');
+        return;
+      }
+      const p = CONTENT.projects.find((x: any) => x.id === id);
+      if (!p) {
+        appendLine(LANG === 'fr'
+          ? `Projet '${id}' introuvable. Tapez 'projects' pour la liste.`
+          : `Project '${id}' not found. Type 'projects' for the list.`, 'line-error');
+        return;
+      }
+      blank();
+      appendLine(`  - ${p.name} ${'-'.repeat(Math.max(2, 48 - p.name.length))}`, 'line-title');
+      blank();
+      const words = p.description.split(' ');
+      let line = '  ';
+      for (const word of words) {
+        if (line.length + word.length > 72) { appendLine(line, 'line-output'); line = '  ' + word + ' '; }
+        else line += word + ' ';
+      }
+      if (line.trim()) appendLine(line, 'line-output');
+      blank();
+      if (p.tech.length) appendLine('  Tech : ' + p.tech.join(' · '), 'line-dim');
+      blank();
+      p.links.forEach((lk: any) => {
+        appendHTML(
+          `  <span class="line-dim">↳ ${lk.label} : </span>` +
+          `<a href="${lk.url}" target="_blank" rel="noopener">${lk.url}</a>`,
+          'line-link'
+        );
+      });
+      if (p.blogSlug) {
+        blank();
+        appendLine(LANG === 'fr'
+          ? `  -> Article associé : blog ${p.blogSlug}`
+          : `  -> Related post: blog ${p.blogSlug}`, 'line-dim');
+      }
+      appendLine(`  ${'-'.repeat(52)}`, 'line-title');
+      blank();
+    }
+
+    function cmdGames() {
+      blank();
+      const gameProjects = CONTENT.projects.filter((p: any) => ['rmce', 'hibiki'].includes(p.id));
+      appendLine(LANG === 'fr' ? '  Projets jeux :' : '  Game projects:', 'line-title');
+      blank();
+      gameProjects.forEach((p: any) => {
+        appendLine(`  • ${p.name.padEnd(14)} ${p.description.slice(0, 55)}...`, 'line-output');
+      });
+      blank();
+      appendLine(LANG === 'fr'
+        ? "  Aucun mini-jeu disponible pour l'instant."
+        : "  No mini-games available yet.", 'line-dim');
+      appendLine(LANG === 'fr'
+        ? "  Essayez 'sudo install games' pour débloquer du contenu caché ;)"
+        : "  Try 'sudo install games' to unlock hidden content ;)", 'line-dim');
+      blank();
+    }
+
+    function cmdBlog(args: string[]) {
+      if (!args[0]) {
+        blank();
+        if (!POSTS.length) {
+          appendLine(LANG === 'fr' ? '  Aucun article trouvé.' : '  No posts found.', 'line-dim');
+        } else {
+          POSTS.forEach((p: any, i: number) => {
+            const num = String(i + 1).padStart(2, ' ');
+            appendLine(`  [${num}]  ${p.pubDate.slice(0,10)}  ${p.title}`, 'line-output');
+          });
+          blank();
+          appendLine(LANG === 'fr'
+            ? "  -> 'blog <n>' ou 'blog <slug>' pour lire"
+            : "  -> 'blog <n>' or 'blog <slug>' to read", 'line-dim');
+        }
+        blank();
+        return;
+      }
+      const arg = args[0];
+      const asNum = parseInt(arg, 10);
+      let post: any = null;
+      if (!isNaN(asNum) && asNum >= 1 && asNum <= POSTS.length) post = POSTS[asNum - 1];
+      else post = POSTS.find((p: any) => p.slug === arg || p.slug.includes(arg));
+      if (!post) {
+        appendLine(LANG === 'fr'
+          ? `Article '${arg}' introuvable. Tapez 'blog' pour la liste.`
+          : `Post '${arg}' not found. Type 'blog' for the list.`, 'line-error');
+        return;
+      }
+      blank();
+      appendLine(`  - ${post.title} ${'-'.repeat(Math.max(2, 48 - post.title.length))}`, 'line-title');
+      appendLine(`     ${post.pubDate.slice(0,10)}`, 'line-dim');
+      appendLine(`     ${post.description}`, 'line-dim');
+      appendLine(`  ${'-'.repeat(52)}`, 'line-title');
+      blank();
+      const body = post.isMdx ? post.description : stripMd(post.body || post.description);
+      body.split('\n').forEach((l: string) => appendLine('  ' + l));
+      blank();
+    }
+
+    function cmdContact() {
+      const c = CONTENT.contact;
+      blank();
+      appendLine(LANG === 'fr' ? '  Me contacter :' : '  Contact me:', 'line-title');
+      blank();
+      appendHTML(`  <span class="line-dim">GitHub   : </span><a href="${c.github}" target="_blank" rel="noopener">${c.github}</a>`, 'line-link');
+      appendHTML(`  <span class="line-dim">LinkedIn : </span><a href="${c.linkedin}" target="_blank" rel="noopener">${c.linkedin}</a>`, 'line-link');
+      appendHTML(`  <span class="line-dim">HTB      : </span><a href="${c.htb}" target="_blank" rel="noopener">${c.htb}</a>`, 'line-link');
+      blank();
+    }
+
+    function cmdCv() {
+      appendLine(LANG === 'fr' ? 'Téléchargement du CV...' : 'Downloading CV...', 'line-info');
+      const a = document.createElement('a');
+      a.href = '/cv.pdf';
+      a.download = 'evan-hugues-cv.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => { appendLine(LANG === 'fr' ? 'Terminé.' : 'Done.'); scrollBottom(); }, 300);
+    }
+
+    function cmdLang(args: string[]) {
+      const target = args[0]?.toLowerCase();
+      if (target !== 'fr' && target !== 'en') {
+        appendLine('Usage: lang <fr|en>', 'line-error'); return;
+      }
+      if (target === LANG) {
+        appendLine(LANG === 'fr' ? `Vous êtes déjà en ${target}.` : `Already in ${target}.`, 'line-dim'); return;
+      }
+      appendLine(LANG === 'fr' ? `Basculement vers ${target.toUpperCase()}...` : `Switching to ${target.toUpperCase()}...`, 'line-info');
+      setTimeout(() => { window.location.href = `/${target}/`; }, 800);
+    }
+
+    function cmdClear() { output.innerHTML = ''; }
+
+    function cmdSudo(args: string[]) {
+      if (args[0] === 'install' && args[1] === 'games') {
+        const lines = [
+          LANG === 'fr' ? 'Téléchargement des jeux cachés...' : 'Downloading hidden games...',
+          '████████░░  80%', '█████████░  90%', '██████████  100%', '',
+          LANG === 'fr' ? 'Erreur : accès refusé. Niveau de clearance insuffisant.' : 'Error: access denied. Clearance level insufficient.',
+          LANG === 'fr' ? 'Obtenez un rang plus élevé sur Rootme et réessayez.' : 'Achieve a higher rank on Rootme and try again.',
+        ];
+        lines.forEach((l, i) => setTimeout(() => { appendLine(l, i < 4 ? 'line-info' : (i === 4 ? 'line-output' : 'line-error')); scrollBottom(); }, i * 400));
+        return;
+      }
+      const lines = [
+        '[sudo] password for evan: ', 'Sorry, try again.',
+        '[sudo] password for evan: ', 'Sorry, try again.',
+        '[sudo] password for evan: ', '',
+        'evan is not in the sudoers file.', 'This incident will be reported.',
+      ];
+      lines.forEach((l, i) => setTimeout(() => { appendLine(l, i >= 6 ? 'line-error' : 'line-output'); scrollBottom(); }, i * 500));
+    }
+
+    function cmdExit() {
+      appendLine("Il n'y a ni échappatoire, ni remède, ni refuge contre la destinée. Henri Frédéric Amiel -1868");
+    }
+
+    function cmdRmRf() {
+      const lines = [
+        'Initialisation de la destruction totale du système...',
+        'Suppression de /bin... fait', 'Suppression de /etc... fait',
+        'Suppression de /home/evan/Document... attends frero',
+        'Suppression de /home/evan/projects... NAHHHH',
+        'Suppression de /home/evan/projects/mysite... ERREUR',
+        'Opération annulée.', '', "(c un portfolio pas une vm tocard)",
+      ];
+      lines.forEach((l, i) => setTimeout(() => {
+        appendLine(l, l.includes('ERROR') || l.includes('ERREUR') ? 'line-error' : (!l || l.startsWith('(') ? 'line-dim' : 'line-output'));
+        scrollBottom();
+      }, i * 850));
+    }
+
+    const ALL_CMDS = ['help','whoami','about','skills','projects','project','games','blog','contact','cv','lang','clear','sudo','exit','rm'];
+
+    function handleInput(raw: string) {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+      history.unshift(trimmed);
+      historyIndex = -1;
+      appendLine(`evan@portfolio:~$ ${trimmed}`, 'line-cmd');
+      if (/^rm\s+-rf\s+[/~*]/.test(trimmed)) { cmdRmRf(); scrollBottom(); return; }
+      const parts = trimmed.split(/\s+/);
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+      switch (cmd) {
+        case 'help':     cmdHelp();        break;
+        case 'whoami':   cmdWhoami();      break;
+        case 'about':    cmdAbout();       break;
+        case 'skills':   cmdSkills();      break;
+        case 'projects': cmdProjects();    break;
+        case 'project':  cmdProject(args); break;
+        case 'games':    cmdGames();       break;
+        case 'blog':     cmdBlog(args);    break;
+        case 'contact':  cmdContact();     break;
+        case 'cv':       cmdCv();          break;
+        case 'lang':     cmdLang(args);    break;
+        case 'clear':    cmdClear();       return;
+        case 'sudo':     cmdSudo(args);    break;
+        case 'exit':     cmdExit();        break;
+        default:
+          appendLine(LANG === 'fr'
+            ? `Commande introuvable : '${cmd}'. Tapez 'help' pour l'aide.`
+            : `Command not found: '${cmd}'. Type 'help' for help.`, 'line-error');
+      }
+      scrollBottom();
+    }
+
+    function handleTab(val: string) {
+      const parts = val.split(/\s+/);
+      const cmd = parts[0], arg = parts[1] || '';
+      if (parts.length === 1) {
+        const m = ALL_CMDS.filter(c => c.startsWith(cmd));
+        if (m.length === 1) { input.value = m[0] + ' '; }
+        else if (m.length > 1) { appendLine(m.join('   '), 'line-dim'); scrollBottom(); }
+      } else if (cmd === 'project' || cmd === 'projects') {
+        const m = CONTENT.projects.map((p: any) => p.id).filter((id: string) => id.startsWith(arg));
+        if (m.length === 1) input.value = `project ${m[0]}`;
+        else if (m.length > 1) { appendLine(m.join('   '), 'line-dim'); scrollBottom(); }
+      } else if (cmd === 'blog') {
+        const m = POSTS.map((p: any) => p.slug).filter((s: string) => s.startsWith(arg));
+        if (m.length === 1) input.value = `blog ${m[0]}`;
+        else if (m.length > 1) { appendLine(m.join('   '), 'line-dim'); scrollBottom(); }
+      } else if (cmd === 'lang') {
+        const m = ['fr','en'].filter(l => l.startsWith(arg));
+        if (m.length === 1) input.value = `lang ${m[0]}`;
+      }
+    }
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = input.value;
+        input.value = '';
+        handleInput(val);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (historyIndex < history.length - 1) {
+          historyIndex++;
+          input.value = history[historyIndex];
+          setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0);
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        historyIndex = historyIndex > 0 ? historyIndex - 1 : -1;
+        input.value = historyIndex >= 0 ? history[historyIndex] : '';
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        handleTab(input.value);
+      } else if (e.key === 'c' && e.ctrlKey) {
+        e.preventDefault();
+        appendLine(`evan@portfolio:~$ ${input.value}^C`, 'line-dim');
+        input.value = '';
+        historyIndex = -1;
+        scrollBottom();
+      } else if (e.key === 'l' && e.ctrlKey) {
+        e.preventDefault();
+        cmdClear();
+      }
+    });
+
+    document.getElementById('terminal')!.addEventListener('click', () => input.focus());
+
+    CONTENT.welcome.forEach((l: string) => appendLine(l, 'line-banner'));
+    cmdHelp();
+    scrollBottom();
+    input.focus();
+  </script>
+</body>
+</html>

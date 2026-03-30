@@ -1,90 +1,20 @@
 ---
-import BaseHead from "@components/BaseHead.astro";
-import Footer from "@components/Footer.astro";
-import Header from "@components/Header.astro";
-import HoverText from "@components/HoverText.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "@const";
+import { getCollection } from 'astro:content';
+import Terminal from '@components/Terminal.astro';
+import { content } from '../../data/content';
+
+const locale = 'fr' as const;
+
+const rawPosts = await getCollection('blog', ({ id }) => id.startsWith(`${locale}/blog/`));
+const posts = rawPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .map(p => ({
+    slug:        p.id.split('/').pop() ?? p.id,
+    title:       p.data.title,
+    description: p.data.description,
+    pubDate:     p.data.pubDate.toISOString().slice(0, 10),
+    body:        p.body ?? '',
+    isMdx:       p.id.endsWith('.mdx'),
+  }));
 ---
-
-<!doctype html>
-<html lang="fr">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>Bonjour à toutes et à tous !</h1>
-
-			<p>
-				Bienvenue sur mon site. Vous y trouverez un blog dans lequel je
-				partage mes projets personnels, ainsi que mes comptes rendus en
-				cybersécurité, depuis mes débuts jusqu’à aujourd’hui.
-			</p>
-
-			<p>
-				Je suis un jeune développeur issu d’un BUT Informatique (bac
-				+3). Je développe principalement des applications en <code
-					>Python</code
-				>, <code>TypeScript</code>, <code>PHP</code> et <code>Rust</code
-				>. Je maîtrise également plusieurs frameworks tels que <code
-					>Flask</code
-				>, <code>FastAPI</code>,
-				<code>Next.js</code> et <code>Symfony</code>.
-			</p>
-
-			<p>
-				Voici quelques projets pour vous donner un aperçu de ce que je
-				suis capable de réaliser :
-			</p>
-
-			<ul>
-				<li>
-					<HoverText
-						hoverText="Les SAE sont des projets scolaires de fin d'année, souvent conséquents"
-						>SAÉ</HoverText
-					> 5 Aramis
-				</li>
-				<li>RMCE, une application mobile de course automobile</li>
-				<li>
-					Valenstagram, une reproduction d’Instagram à des fins
-					d’apprentissage technique
-				</li>
-				<li>
-					Telebox, une application Python permettant de scraper des
-					membres sur Telegram
-				</li>
-				<li>
-					Turbo Selector, une API permettant d’optimiser la sélection
-					de n joueurs selon différents paramètres
-				</li>
-				<li>
-					Dashdust, un dashboard serveur simple, puissant et moderne,
-					optimisé en Rust et WebAssembly
-				</li>
-				<li>
-					Wipytest, une application de scan Wi-Fi passif et d’analyse
-					de vulnérabilités
-				</li>
-			</ul>
-
-			<p>
-				Par ailleurs, je suis passionné par le <HoverText
-					hoverText="Applications auto-hébergées sur mon NAS"
-					>self-hosting</HoverText
-				>. J’aime héberger de nombreuses applications et concevoir des
-				architectures proches de la production sur mon serveur
-				personnel.
-			</p>
-
-			<p>
-				Enfin, je m’intéresse particulièrement à la cybersécurité. Je
-				possède notamment des comptes sur
-				<code>Root-Me</code> et <code>Hack The Box</code>. N’hésitez pas
-				à consulter mes profils pour découvrir mes compétences et les
-				domaines dans lesquels je me suis illustré.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Terminal lang={locale} posts={posts} siteContent={content[locale]} />
