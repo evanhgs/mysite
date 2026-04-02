@@ -5,37 +5,20 @@ pubDate: '24 mars 2026'
 heroImage: '@assets/blog-placeholder-3.jpg'
 ---
 
-À l’époque où je faisais mes premiers pas dans la programmation, j’étais littéralement fasciné par Python. C’était mon terrain de jeu. Je développais un peu de tout : des sites web, des applications desktop, des scripts en tout genre… chaque idée était une excuse pour coder.
+À l’époque où je débutais dans la programmation, j’adorais Python et je faisais de tout avec : sites, applications, scripts…
+Je travaillais avec des personnes qui avaient besoin de faire grossir des groupes sur Telegram pour améliorer leur visibilité, et je me suis tourné vers l’API de Telegram pour voir ce qu’il était possible de faire. J’avais entendu dire qu’on pouvait ajouter automatiquement des membres dans un groupe à partir d’une liste CSV et d’un compte Telegram.
 
-C’est dans ce contexte que j’ai commencé à collaborer avec des personnes cherchant à faire croître leurs groupes Telegram afin d’améliorer leur visibilité. Intrigué, je me suis tourné vers l’API de Telegram pour explorer les possibilités. J’avais entendu dire qu’il était possible d’ajouter automatiquement des membres à un groupe à partir d’une simple liste CSV associée à un compte Telegram.
+J’ai donc commencé par créer un CLI pour lancer des commandes et exécuter des scripts permettant de se connecter à Telegram, de récupérer des membres dans des groupes publics, de les stocker, puis de les ajouter dans le groupe souhaité. Bon, niveau RGPD, on pourra rediscuter de ça plus tard ^^
 
-Ni une ni deux, je me lance.
+Puis j’ai trouvé le CLI peu pratique, car mon objectif était de vendre des licences, et pour commercialiser mon application, il fallait une interface accessible à tout type d’utilisateur.
+Ma stratégie a donc été de refactoriser mon application et de revoir ma façon de programmer (mes débuts en programmation orientée objet). J’ai dû tout repenser : séparer la logique métier dans des classes et structurer correctement l’ensemble.
 
-Je commence par développer un outil en ligne de commande (CLI), capable d’exécuter différentes actions : se connecter à Telegram, récupérer des membres depuis des groupes publics, les stocker, puis les réinjecter dans un groupe cible. Une sorte de pipeline automatisé, brut mais efficace.  
-Bon… côté RGPD, on pourra en reparler plus tard ^^
+Pour le frontend de l’application desktop, je me suis tourné vers CustomTkinter (une version modifiée), car je trouve personnellement Tkinter peu esthétique. J’ai passé plusieurs semaines à coder pour refactoriser les fonctionnalités. En parallèle, j’ai développé un site web dynamique avec Flask pour gérer les clés de licence, l’authentification et les paiements avec Stripe.
 
-Rapidement, je me rends compte d’une limite importante : un CLI, aussi puissant soit-il, reste peu accessible pour des utilisateurs non techniques. Or, mon objectif était clair, proposer une solution commercialisable, avec un système de licences.
+Au total, j’ai passé plusieurs mois sur le site et l’application… pour finalement vendre une seule licence à un inconnu :D
 
-Je décide alors de reprendre le projet à zéro.
+Un projet donc peu rentable financièrement, mais qui m’a permis de décrocher un stage dans une ESN à Lyon, car le fait d’être proactif et motivé a plu à mes employeurs.
 
-C’est à ce moment-là que je plonge sérieusement dans la programmation orientée objet. Je refactorise entièrement mon application, en structurant proprement la logique métier à l’aide de classes. Un vrai tournant dans ma manière de coder (qui faut se permettre était aléatoire).
+L’application est aujourd’hui open source, accessible à tous et toujours fonctionnelle :D
 
-Pour la partie interface, je fais le choix de **CustomTkinter**, une version modernisée de Tkinter, bien plus agréable visuellement (et surtout moins… rustique). Pendant plusieurs semaines, je travaille intensément pour transformer mon outil brut en une véritable application desktop utilisable.
-
-Mais ce n’est pas tout.
-
-En parallèle, je développe un site web dynamique avec Flask, permettant de gérer les clés de licence, l’authentification des utilisateurs et les paiements via stripe  
-
-Au total, ce projet m’a occupé pendant plusieurs mois. Entre le backend, le frontend, l’architecture globale et la logique métier, j’y ai investi une énergie considérable.
-
-Et le résultat ?
-
-Une seule licence vendue. À un parfait inconnu :D
-
-Sur le plan financier, difficile de parler de réussite.
-
-Mais en réalité, ce projet m’a apporté bien plus que de l’argent. Il a été un véritable tremplin. Grâce à lui, j’ai pu décrocher un stage dans une ESN à Lyon. Ce que mes recruteurs ont vu, ce n’était pas le chiffre de vente — mais l’initiative, la persévérance et la capacité à mener un projet complexe de bout en bout.
-
-Aujourd’hui, l’application est open source, toujours fonctionnelle, et accessible à tous sur [Github Telebox](https://github.com/evanhgs/Telegram-scraper-adder-app)
-
-Avec le recul, c’est probablement l’un des projets les plus formateurs que j’ai réalisés. Comme quoi, même les “échecs” peuvent ouvrir de vraies opportunités.
+[L'app Telebox](https://github.com/evanhgs/Telegram-scraper-adder-app)
