@@ -1,268 +1,257 @@
 ---
-import BaseHead from "@components/BaseHead.astro";
-import Footer from "@components/Footer.astro";
-import Header from "@components/Header.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "@const";
+import Layout from "@layouts/BlogPostFrench.astro";
+import AboutHeroImage from "@assets/blog-placeholder-about.jpg";
 ---
 
-<!doctype html>
-<html lang="fr">
-    <head>
-        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-        <style>
-            .table-wrapper {
-                width: 100%;
-                overflow-x: auto;
-                border-radius: 12px;
-                box-shadow:
-                    0 1px 3px rgba(var(--gray), 0.12),
-                    0 4px 16px rgba(var(--gray), 0.14);
-            }
+<Layout
+    title="Mes projets"
+    description="Une liste de tous les projets dev, cyber, production.."
+    pubDate={new Date("04 02 2026")}
+    heroImage={AboutHeroImage}
+>
+    <style>
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow:
+                0 1px 3px rgba(var(--gray), 0.12),
+                0 4px 16px rgba(var(--gray), 0.14);
+        }
 
-            .tableau {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 0.92rem;
-                font-family: "Atkinson", sans-serif;
-                background: #fff;
-            }
+        .tableau {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            font-family: "Atkinson", sans-serif;
+            background: #fff;
+        }
 
-            .tableau thead tr {
-                background: var(--accent);
-                color: #fff;
-                text-align: left;
-            }
+        .tableau thead tr {
+            background: var(--accent);
+            color: #fff;
+            text-align: left;
+        }
 
-            .tableau th {
-                padding: 14px 20px;
-                font-weight: 700;
-                font-size: 0.82rem;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-                white-space: nowrap;
-            }
+        .tableau th {
+            padding: 14px 20px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
 
-            .tableau td {
-                padding: 14px 20px;
-                vertical-align: top;
-                border-bottom: 1px solid rgba(var(--gray-light), 1);
-                color: rgb(var(--gray-dark));
-                line-height: 1.55;
-            }
+        .tableau td {
+            padding: 14px 20px;
+            vertical-align: top;
+            border-bottom: 1px solid rgba(var(--gray-light), 1);
+            color: rgb(var(--gray-dark));
+            line-height: 1.55;
+        }
 
-            .tableau tbody tr:last-child td {
-                border-bottom: none;
-            }
+        .tableau tbody tr:last-child td {
+            border-bottom: none;
+        }
 
-            .tableau tbody tr:nth-child(even) {
-                background: rgba(var(--gray-light), 0.35);
-            }
+        .tableau tbody tr:nth-child(even) {
+            background: rgba(var(--gray-light), 0.35);
+        }
 
-            .tableau tbody tr:hover {
-                background: rgba(35, 55, 255, 0.05);
-                transition: background 0.15s ease;
-            }
+        .tableau tbody tr:hover {
+            background: rgba(35, 55, 255, 0.05);
+            transition: background 0.15s ease;
+        }
 
-            .tableau td.project-name {
-                font-weight: 600;
-                color: rgb(var(--black));
-                white-space: nowrap;
-            }
+        .tableau td.project-name {
+            font-weight: 600;
+            color: rgb(var(--black));
+            white-space: nowrap;
+        }
 
-            .tableau td.project-links {
-                white-space: nowrap;
-            }
+        .tableau td.project-links {
+            white-space: nowrap;
+        }
 
-            .tableau td.project-links a {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.3rem;
-                color: var(--accent);
-                text-decoration: none;
-                font-size: 0.88rem;
-                border-bottom: 1px solid transparent;
-                transition: border-color 0.15s ease;
-            }
+        .tableau td.project-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.88rem;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.15s ease;
+        }
 
-            .tableau td.project-links a:hover {
-                border-color: var(--accent);
-            }
+        .tableau td.project-links a:hover {
+            border-color: var(--accent);
+        }
 
-            .link-label {
-                font-size: 0.75rem;
-                font-weight: 600;
-                color: rgb(var(--gray));
-                text-transform: uppercase;
-                letter-spacing: 0.04em;
-                margin-right: 0.25rem;
-            }
-        </style>
-    </head>
-    <body>
-        <Header />
-        <main>
-            <section class="projects-section">
-                <h1>Projets</h1>
-                <p>Mes projets personnels et académiques</p>
-                <div class="table-wrapper">
-                    <table class="tableau">
-                        <thead>
-                            <tr>
-                                <th>Projet</th>
-                                <th>Description</th>
-                                <th>Liens open source</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="project-name">SAE 5 Aramis</td>
-                                <td>
-                                    Application web de gestion de picking
-                                    entrepôt (Next.js / PostgreSQL) permettant
-                                    aux préparateurs de traiter des supports
-                                    guidés par reconnaissance vocale et
-                                    visualisation 3D, et aux superviseurs de
-                                    piloter en temps réel l'activité, les stocks
-                                    et les manquants.
-                                </td>
-                                <td class="project-links">
-                                    <a
-                                        href="https://gitlab.iut-valence.fr/huguesev/sae5_aramis"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">GitLab</span>
-                                        sae5_aramis ↗
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="project-name">RMCE</td>
-                                <td
-                                    >Application mobile de course de voiture,
-                                    comme strava mais pour les voitures sur
-                                    routes ouvertes</td
-                                >
-                                <td class="project-links">
-                                    <a
-                                        href="https://github.com/evanhgs/rust-rmce-api"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">API</span>
-                                        rust-rmce-api ↗
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="https://github.com/evanhgs/rmce_app"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style="margin-top: 6px;"
-                                    >
-                                        <span class="link-label">App</span>
-                                        rmce_app ↗
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="project-name">Valenstagram</td>
-                                <td>Une version d'Instagram fait à Valence</td>
-                                <td class="project-links">
-                                    <a
-                                        href="https://github.com/evanhgs/val-api"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">API</span>
-                                        valenstagram-api ↗
-                                    </a>
-                                    <br />
-                                    <a
-                                        href="https://github.com/evanhgs/val-webapp"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style="margin-top: 6px;"
-                                    >
-                                        <span class="link-label">App</span>
-                                        valenstagram-webapp ↗
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="project-name">Telebox</td>
-                                <td>/</td>
-                                <td class="project-links">
-                                    <a
-                                        href="https://github.com/evanhgs/Telegram-scraper-adder-app"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">Github</span>
-                                        Telebox ↗
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="project-name">Hibiki</td>
-                                <td>/</td>
-                                <td class="project-links">
-                                    <a
-                                        href="https://github.com/Hibiki-music-app/hibiki"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">Github</span>
-                                        Hibiki ↗
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="project-name">Dashdut</td>
-                                <td>/</td>
-                                <td class="project-links">
-                                    <a
-                                        href="https://github.com/evanhgs/dashdust"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">Github</span>
-                                        dashdust ↗
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="project-name">Turbo selector</td>
-                                <td>/</td>
-                                <td class="project-links">
-                                    <a
-                                        href="https://github.com/evanhgs/turbo-selector"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">Github</span>
-                                        dashdust ↗
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="project-name">Wipytest</td>
-                                <td>/</td>
-                                <td class="project-links">
-                                    <a
-                                        href="https://github.com/evanhgs/wipytest"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <span class="link-label">Github</span>
-                                        Wipytest ↗
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-        <Footer />
-    </body>
-</html>
+        .link-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgb(var(--gray));
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-right: 0.25rem;
+        }
+    </style>
+    <section class="projects-section">
+        <div class="table-wrapper">
+            <table class="tableau">
+                <thead>
+                    <tr>
+                        <th>Projet</th>
+                        <th>Description</th>
+                        <th>Liens open source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="project-name">SAE 5 Aramis</td>
+                        <td>
+                            Application web de gestion de picking entrepôt
+                            (Next.js / PostgreSQL) permettant aux préparateurs
+                            de traiter des supports guidés par reconnaissance
+                            vocale et visualisation 3D, et aux superviseurs de
+                            piloter en temps réel l'activité, les stocks et les
+                            manquants.
+                        </td>
+                        <td class="project-links">
+                            <a
+                                href="https://gitlab.iut-valence.fr/huguesev/sae5_aramis"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">GitLab</span>
+                                sae5_aramis ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-name">RMCE</td>
+                        <td
+                            >Application mobile de course de voiture, comme
+                            strava mais pour les voitures sur routes ouvertes</td
+                        >
+                        <td class="project-links">
+                            <a
+                                href="https://github.com/evanhgs/rust-rmce-api"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">API</span>
+                                rust-rmce-api ↗
+                            </a>
+                            <br />
+                            <a
+                                href="https://github.com/evanhgs/rmce_app"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="margin-top: 6px;"
+                            >
+                                <span class="link-label">App</span>
+                                rmce_app ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-name">Valenstagram</td>
+                        <td>Une version d'Instagram fait à Valence</td>
+                        <td class="project-links">
+                            <a
+                                href="https://github.com/evanhgs/val-api"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">API</span>
+                                valenstagram-api ↗
+                            </a>
+                            <br />
+                            <a
+                                href="https://github.com/evanhgs/val-webapp"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="margin-top: 6px;"
+                            >
+                                <span class="link-label">App</span>
+                                valenstagram-webapp ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-name">Telebox</td>
+                        <td>/</td>
+                        <td class="project-links">
+                            <a
+                                href="https://github.com/evanhgs/Telegram-scraper-adder-app"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">Github</span>
+                                Telebox ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-name">Hibiki</td>
+                        <td>/</td>
+                        <td class="project-links">
+                            <a
+                                href="https://github.com/Hibiki-music-app/hibiki"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">Github</span>
+                                Hibiki ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-name">Dashdut</td>
+                        <td>/</td>
+                        <td class="project-links">
+                            <a
+                                href="https://github.com/evanhgs/dashdust"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">Github</span>
+                                dashdust ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-name">Turbo selector</td>
+                        <td>/</td>
+                        <td class="project-links">
+                            <a
+                                href="https://github.com/evanhgs/turbo-selector"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">Github</span>
+                                dashdust ↗
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="project-name">Wipytest</td>
+                        <td>/</td>
+                        <td class="project-links">
+                            <a
+                                href="https://github.com/evanhgs/wipytest"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span class="link-label">Github</span>
+                                Wipytest ↗
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</Layout>
