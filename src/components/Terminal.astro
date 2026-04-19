@@ -307,16 +307,21 @@ const { lang, posts, siteContent } = Astro.props;
     function cmdRmRf() {
       const lines = [
         'Initialisation de la destruction totale du système...',
-        'Suppression de /bin... fait', 'Suppression de /etc... fait',
+        'Suppression de /bin... fait',
+        'Suppression de /etc... fait',
         'Suppression de /home/evan/Document... attends frero',
         'Suppression de /home/evan/projects... NAHHHH',
         'Suppression de /home/evan/projects/mysite... ERREUR',
-        'Opération annulée.', '', "(c un portfolio pas une vm tocard)",
+        'Opération annulée.', '', "(c'est un portfolio)",
       ];
       lines.forEach((l, i) => setTimeout(() => {
         appendLine(l, l.includes('ERROR') || l.includes('ERREUR') ? 'line-error' : (!l || l.startsWith('(') ? 'line-dim' : 'line-output'));
         scrollBottom();
       }, i * 850));
+      setTimeout(() => {
+        appendHTML('<img src="/gifs/explosion.gif" alt="explosion" style="max-width:400px;margin-top:8px;border-radius:4px;">', 'line-output');
+        scrollBottom();
+      }, 3 * 850);
     }
 
     const ALL_CMDS = ['help','whoami','about','skills','projects','project','games','blog','contact','cv','lang','clear','sudo','exit','rm'];
