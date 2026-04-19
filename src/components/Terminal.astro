@@ -1,5 +1,6 @@
 ---
 import type { SiteContent } from '../data/content';
+import { ASCII_SIGNATURES } from '@components/AsciiName';
 import '../styles/terminal.css';
 
 interface Post {
@@ -18,7 +19,12 @@ interface Props {
 }
 
 const { lang, posts, siteContent } = Astro.props;
-const terminalData = JSON.stringify({ posts, content: siteContent, lang }).replace(/</g, '\\u003c');
+const terminalData = JSON.stringify({
+  posts,
+  content: siteContent,
+  lang,
+  asciiSignatures: ASCII_SIGNATURES,
+}).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -71,13 +77,21 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
   <script>
     const rawTerminalData =
       document.getElementById('terminal-data')?.textContent?.trim() ?? '{}';
-    const { posts: POSTS, content: CONTENT, lang: LANG } = JSON.parse(rawTerminalData) as { posts: any[], content: any, lang: 'fr' | 'en' };
+    const {
+      posts: POSTS,
+      content: CONTENT,
+      lang: LANG,
+      asciiSignatures: ASCII_SIGNATURES,
+    } = JSON.parse(rawTerminalData) as {
+      posts: any[],
+      content: any,
+      lang: 'fr' | 'en',
+      asciiSignatures: string[][],
+    };
 
     const output = document.getElementById('output')!;
     const input  = document.getElementById('cmd-input') as HTMLInputElement;
     const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
-
-
     const history: string[] = [];
     let   historyIndex = -1;
     const THEME_STORAGE_KEY = 'terminal-theme';
@@ -165,6 +179,12 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
 
     function scrollBottom() {
       output.scrollTop = output.scrollHeight;
+    }
+
+    function getWelcomeLines() {
+      const signature = ASCII_SIGNATURES[Math.floor(Math.random() * ASCII_SIGNATURES.length)];
+      const footer = CONTENT.welcome.slice(-4);
+      return [...signature, '', ...footer];
     }
 
     function stripMd(md: string): string {
@@ -553,7 +573,7 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
 
     document.getElementById('terminal')!.addEventListener('click', () => input.focus());
 
-    CONTENT.welcome.forEach((l: string) => appendLine(l, 'line-banner'));
+    getWelcomeLines().forEach((l: string) => appendLine(l, 'line-banner'));
     cmdHelp();
     scrollBottom();
     initTheme();
