@@ -3,8 +3,7 @@ export const prerender = true;
 ---
 
 <meta charset="utf-8" />
-<script is:inline>
-	const lang = navigator.language || navigator.userLanguage || '';
-	const isFrench = lang.toLowerCase().startsWith('fr');
-	window.location.replace(isFrench ? '/fr/' : '/en/');
-</script>
+<noscript>
+	<meta http-equiv="refresh" content="0;url=/fr/" />
+</noscript>
+<script is:inline src="/root-redirect.js"></script>

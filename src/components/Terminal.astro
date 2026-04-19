@@ -18,6 +18,7 @@ interface Props {
 }
 
 const { lang, posts, siteContent } = Astro.props;
+const terminalData = JSON.stringify({ posts, content: siteContent, lang }).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -36,6 +37,8 @@ const { lang, posts, siteContent } = Astro.props;
   <meta property="og:type" content="website" />
 </head>
 <body>
+  <script id="terminal-data" type="application/json" set:html={terminalData}></script>
+
   <div id="terminal">
     <div id="output" aria-live="polite"></div>
     <div id="input-line">
@@ -52,13 +55,10 @@ const { lang, posts, siteContent } = Astro.props;
     </div>
   </div>
 
-  <script define:vars={{ __posts: posts, __content: siteContent, __lang: lang }}>
-    window.__T__ = { posts: __posts, content: __content, lang: __lang };
-  </script>
-
   <script>
-    const { posts: POSTS, content: CONTENT, lang: LANG } =
-      (window as any).__T__ as { posts: any[], content: any, lang: 'fr' | 'en' };
+    const rawTerminalData =
+      document.getElementById('terminal-data')?.textContent?.trim() ?? '{}';
+    const { posts: POSTS, content: CONTENT, lang: LANG } = JSON.parse(rawTerminalData) as { posts: any[], content: any, lang: 'fr' | 'en' };
 
     const output = document.getElementById('output')!;
     const input  = document.getElementById('cmd-input') as HTMLInputElement;
