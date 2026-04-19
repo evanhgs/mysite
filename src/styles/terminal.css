@@ -75,6 +75,16 @@ html, body {
 .line-link a:hover {
   color: #00eeff;
 }
+
+.cmd-clickable {
+  cursor: pointer;
+  text-decoration: none;
+  text-decoration-style: none;
+}
+.cmd-clickable:hover {
+  color: #00eeff;
+  text-decoration-style: solid;
+}
 #input-line {
   flex: 0 0 auto;
   display: flex;

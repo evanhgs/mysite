@@ -81,6 +81,41 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
       output.appendChild(div);
     }
 
+    function runSuggestedCommand(cmd: string) {
+      input.value = cmd;
+      input.focus();
+      input.setSelectionRange(cmd.length, cmd.length);
+
+      window.setTimeout(() => {
+        const value = input.value;
+        input.value = '';
+        handleInput(value);
+      }, 80);
+    }
+
+    function appendClickable(text: string, label: string, cmd: string, cls = 'line-output') {
+      const div = document.createElement('div');
+      div.className = cls;
+      const parts = text.split(label);
+      if (parts.length === 2) {
+        div.textContent = parts[0];
+        const span = document.createElement('span');
+        span.className = 'cmd-clickable';
+        span.textContent = label;
+        span.title = LANG === 'fr'
+          ? `Cliquer pour lancer: ${cmd}`
+          : `Click to run: ${cmd}`;
+        span.addEventListener('click', () => {
+          runSuggestedCommand(cmd);
+        });
+        div.appendChild(span);
+        div.appendChild(document.createTextNode(parts[1]));
+      } else {
+        div.textContent = text;
+      }
+      output.appendChild(div);
+    }
+
     function blank() { appendLine(''); }
 
     function scrollBottom() {
@@ -107,7 +142,32 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
     }
 
     function cmdHelp() {
-      CONTENT.help.forEach((l: string) => appendLine(l));
+      const exampleLang = LANG === 'fr' ? 'lang en' : 'lang fr';
+      const exampleBlogSlug = POSTS[0]?.slug ?? '1';
+      const clickableHelp = [
+        [LANG === 'fr' ? '  help             - afficher cette aide' : '  help             - show this help', 'help', 'help'],
+        [LANG === 'fr' ? '  whoami           - qui suis-je ?' : '  whoami           - who am I?', 'whoami', 'whoami'],
+        [LANG === 'fr' ? '  about            - en savoir plus sur moi' : '  about            - learn more about me', 'about', 'about'],
+        [LANG === 'fr' ? '  skills           - mes competences techniques' : '  skills           - my technical skills', 'skills', 'skills'],
+        [LANG === 'fr' ? '  projects         - liste de mes projets' : '  projects         - list my projects', 'projects', 'projects'],
+        [LANG === 'fr' ? "  project <id>     - details d'un projet  (ex: project telebox)" : '  project <id>     - project details  (e.g. project telebox)', 'project <id>', 'project telebox'],
+        [LANG === 'fr' ? '  games            - mes projets de jeux' : '  games            - my game projects', 'games', 'games'],
+        [LANG === 'fr' ? `  blog <n|slug>    - lire un article  (ex: blog 1, blog ${exampleBlogSlug})` : `  blog <n|slug>    - read a post  (e.g. blog 1, blog ${exampleBlogSlug})`, 'blog <n|slug>', 'blog 1'],
+        [LANG === 'fr' ? '  contact          - mes liens de contact' : '  contact          - my contact links', 'contact', 'contact'],
+        [LANG === 'fr' ? '  cv               - telecharger mon CV (PDF)' : '  cv               - download my resume (PDF)', 'cv', 'cv'],
+        [LANG === 'fr' ? '  lang <fr|en>     - changer de langue' : '  lang <fr|en>     - switch language', 'lang <fr|en>', exampleLang],
+        [LANG === 'fr' ? '  clear            - vider le terminal' : '  clear            - clear the terminal', 'clear', 'clear'],
+      ];
+
+      appendLine(CONTENT.help[0]);
+      blank();
+      clickableHelp.forEach(([text, label, cmd]) => appendClickable(text, label, cmd));
+      blank();
+      appendLine(CONTENT.help[15]);
+      appendLine(CONTENT.help[16]);
+      appendLine(CONTENT.help[17]);
+      appendLine(CONTENT.help[18]);
+      appendLine(CONTENT.help[19]);
     }
 
     function cmdWhoami() {
@@ -132,12 +192,18 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
       blank();
       CONTENT.projects.forEach((p: any, i: number) => {
         const num = String(i + 1).padStart(2, ' ');
-        appendLine(`  [${num}]  ${p.id.padEnd(20)} ${p.name}`, 'line-output');
+        const line = `  [${num}]  ${p.id.padEnd(20)} ${p.name}`;
+        appendClickable(line, p.id, `project ${p.id}`, 'line-output');
       });
       blank();
-      appendLine(LANG === 'fr'
-        ? "  -> 'project <id>' pour les détails   ex: project telebox"
-        : "  -> 'project <id>' for details        e.g. project telebox", 'line-dim');
+      appendClickable(
+        LANG === 'fr'
+          ? "  -> 'project telebox' pour les détails"
+          : "  -> 'project telebox' for details",
+        'project telebox',
+        'project telebox',
+        'line-dim'
+      );
       blank();
     }
 
@@ -178,9 +244,14 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
       });
       if (p.blogSlug) {
         blank();
-        appendLine(LANG === 'fr'
-          ? `  -> Article associé : blog ${p.blogSlug}`
-          : `  -> Related post: blog ${p.blogSlug}`, 'line-dim');
+        appendClickable(
+          LANG === 'fr'
+            ? `  -> Article associe : blog ${p.blogSlug}`
+            : `  -> Related post: blog ${p.blogSlug}`,
+          `blog ${p.blogSlug}`,
+          `blog ${p.blogSlug}`,
+          'line-dim'
+        );
       }
       appendLine(`  ${'-'.repeat(52)}`, 'line-title');
       blank();
@@ -198,9 +269,14 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
       appendLine(LANG === 'fr'
         ? "  Aucun mini-jeu disponible pour l'instant."
         : "  No mini-games available yet.", 'line-dim');
-      appendLine(LANG === 'fr'
-        ? "  Essayez 'sudo install games' pour débloquer du contenu caché ;)"
-        : "  Try 'sudo install games' to unlock hidden content ;)", 'line-dim');
+      appendClickable(
+        LANG === 'fr'
+          ? "  Essayez 'sudo install games' pour debloquer du contenu cache ;)"
+          : "  Try 'sudo install games' to unlock hidden content ;)",
+        'sudo install games',
+        'sudo install games',
+        'line-dim'
+      );
       blank();
     }
 
@@ -212,12 +288,30 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
         } else {
           POSTS.forEach((p: any, i: number) => {
             const num = String(i + 1).padStart(2, ' ');
-            appendLine(`  [${num}]  ${p.pubDate.slice(0,10)}  ${p.title}`, 'line-output');
+            appendClickable(
+              `  [${num}]  ${p.pubDate.slice(0,10)}  ${p.title}`,
+              p.title,
+              `blog ${i + 1}`,
+              'line-output'
+            );
           });
           blank();
-          appendLine(LANG === 'fr'
-            ? "  -> 'blog <n>' ou 'blog <slug>' pour lire"
-            : "  -> 'blog <n>' or 'blog <slug>' to read", 'line-dim');
+          appendClickable(
+            LANG === 'fr'
+              ? "  -> 'blog 1' ou 'blog telebox' pour lire"
+              : "  -> 'blog 1' or 'blog telebox' to read",
+            'blog 1',
+            'blog 1',
+            'line-dim'
+          );
+          appendClickable(
+            LANG === 'fr'
+              ? `     ou essayez 'blog ${POSTS[0]?.slug ?? '1'}'`
+              : `     or try 'blog ${POSTS[0]?.slug ?? '1'}'`,
+            `blog ${POSTS[0]?.slug ?? '1'}`,
+            `blog ${POSTS[0]?.slug ?? '1'}`,
+            'line-dim'
+          );
         }
         blank();
         return;
