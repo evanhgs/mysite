@@ -40,6 +40,19 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
   <script id="terminal-data" type="application/json" set:html={terminalData}></script>
 
   <div id="terminal">
+    <div id="terminal-toolbar">
+      <label for="theme-select" class="toolbar-label">
+        {lang === 'fr' ? 'Theme' : 'Theme'}
+      </label>
+      <select id="theme-select" aria-label={lang === 'fr' ? 'Selection du theme' : 'Theme selection'}>
+        <option value="matrix">Matrix</option>
+        <option value="light">Light</option>
+        <option value="dracula">Dracula</option>
+        <option value="amber">Amber</option>
+        <option value="ocean">Ocean</option>
+      </select>
+    </div>
+
     <div id="output" aria-live="polite"></div>
     <div id="input-line">
       <span id="prompt">evan@portfolio:~$&nbsp;</span>
@@ -62,10 +75,42 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
 
     const output = document.getElementById('output')!;
     const input  = document.getElementById('cmd-input') as HTMLInputElement;
+    const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
 
 
     const history: string[] = [];
     let   historyIndex = -1;
+    const THEME_STORAGE_KEY = 'terminal-theme';
+    const THEMES = {
+      matrix: 'theme-matrix',
+      light: 'theme-light',
+      dracula: 'theme-dracula',
+      amber: 'theme-amber',
+      ocean: 'theme-ocean',
+    } as const;
+
+    function applyTheme(themeName: keyof typeof THEMES) {
+      document.body.classList.remove(...Object.values(THEMES));
+      document.body.classList.add(THEMES[themeName]);
+      themeSelect.value = themeName;
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, themeName);
+      } catch {}
+    }
+
+    function initTheme() {
+      let savedTheme: keyof typeof THEMES = 'matrix';
+      try {
+        const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY) as keyof typeof THEMES | null;
+        if (storedTheme && storedTheme in THEMES) savedTheme = storedTheme;
+      } catch {}
+
+      applyTheme(savedTheme);
+      themeSelect.addEventListener('change', () => {
+        const nextTheme = themeSelect.value as keyof typeof THEMES;
+        if (nextTheme in THEMES) applyTheme(nextTheme);
+      });
+    }
 
     function appendLine(text: string, cls = 'line-output') {
       const div = document.createElement('div');
@@ -511,6 +556,7 @@ const terminalData = JSON.stringify({ posts, content: siteContent, lang }).repla
     CONTENT.welcome.forEach((l: string) => appendLine(l, 'line-banner'));
     cmdHelp();
     scrollBottom();
+    initTheme();
     input.focus();
   </script>
 </body>
