@@ -1,20 +1,12 @@
 ---
-import { getCollection } from 'astro:content';
-import Terminal from '@components/Terminal.astro';
-import { content } from '../../data/content';
+import HomePage from '@components/HomePage.astro';
+import Site from '@layouts/Site.astro';
+import { content } from '@data/content';
 
 const locale = 'fr' as const;
-
-const rawPosts = await getCollection('blog', ({ id }) => id.startsWith(`${locale}/blog/`));
-const posts = rawPosts
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .map(p => ({
-    slug:        p.id.split('/').pop() ?? p.id,
-    title:       p.data.title,
-    description: p.data.description,
-    pubDate:     p.data.pubDate.toISOString().slice(0, 10),
-    body:        p.body ?? '',
-    isMdx:       p.id.endsWith('.mdx'),
-  }));
+const { meta } = content[locale];
 ---
-<Terminal lang={locale} posts={posts} siteContent={content[locale]} />
+
+<Site locale={locale} title={meta.title} description={meta.description} altPath="/en/">
+	<HomePage locale={locale} />
+</Site>

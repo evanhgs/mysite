@@ -1,0 +1,15 @@
+---
+import ProjectsIndexPage from '@components/ProjectsIndexPage.astro';
+import Site from '@layouts/Site.astro';
+
+const locale = 'fr' as const;
+---
+
+<Site
+	locale={locale}
+	title="Projets — Evan Hugues"
+	description="Huit projets sélectionnés : applications web, API, mobile, sécurité et optimisation."
+	altPath="/en/projects/"
+>
+	<ProjectsIndexPage locale={locale} />
+</Site>

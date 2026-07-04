@@ -1,0 +1,21 @@
+---
+import ProjectPage from '@components/ProjectPage.astro';
+import Site from '@layouts/Site.astro';
+import { content } from '@data/content';
+
+export function getStaticPaths() {
+	return content.fr.projects.map((p) => ({ params: { id: p.id }, props: { project: p } }));
+}
+
+const locale = 'fr' as const;
+const { project } = Astro.props;
+---
+
+<Site
+	locale={locale}
+	title={`${project.name} — Evan Hugues`}
+	description={project.tagline}
+	altPath={`/en/projects/${project.id}/`}
+>
+	<ProjectPage locale={locale} projectId={project.id} />
+</Site>

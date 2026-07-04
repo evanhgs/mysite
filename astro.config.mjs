@@ -6,6 +6,10 @@ import { defineConfig, envField, memoryCache } from 'astro/config';
 export default defineConfig({
 	site: 'https://evanhgs.fr',
 	integrations: [mdx(), sitemap()],
+	build: {
+		// CSS inliné dans chaque page : zéro requête bloquante pour le rendu.
+		inlineStylesheets: 'always',
+	},
 	experimental: {
 		rustCompiler: true,
 		queuedRendering: {
@@ -16,22 +20,22 @@ export default defineConfig({
 		},
 	},
 	security: {
-		csp: true
+		csp: true,
 	},
 	i18n: {
-		locales: ["fr", "en", "es"],
-		defaultLocale: "fr",
+		locales: ['fr', 'en'],
+		defaultLocale: 'fr',
 		routing: {
-			prefixDefaultLocale: true
-		}
+			prefixDefaultLocale: true,
+		},
 	},
 	env: {
 		schema: {
-			BASE_URL: envField.string({ 
-				context: "client", 
-				access: "public", 
-				optional: true 
-			})
-		}
-	}
+			BASE_URL: envField.string({
+				context: 'client',
+				access: 'public',
+				optional: true,
+			}),
+		},
+	},
 });

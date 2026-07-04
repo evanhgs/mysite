@@ -1,0 +1,80 @@
+---
+import type { Locale, Project } from '@data/content';
+import { projectUrl } from '@i18n/ui';
+import ProjectVisual from './ProjectVisual.astro';
+
+interface Props {
+	project: Project;
+	locale: Locale;
+	index: number;
+}
+
+const { project, locale, index } = Astro.props;
+const num = String(index + 1).padStart(2, '0');
+---
+
+<a class="card reveal" href={projectUrl(locale, project.id)}>
+	<div class="tile">
+		<ProjectVisual id={project.id} />
+	</div>
+	<div class="meta">
+		<div class="row">
+			<h3>{project.name}</h3>
+			<span class="micro">{project.year}</span>
+		</div>
+		<p class="row sub">
+			<span class="micro num">{num}</span>
+			<span class="micro tags">{project.tags.join(' · ')}</span>
+		</p>
+	</div>
+</a>
+
+<style>
+	.card {
+		display: block;
+	}
+
+	.tile {
+		aspect-ratio: 8 / 5;
+		overflow: hidden;
+		background: var(--tile);
+	}
+
+	.tile :global(svg) {
+		transition: transform 0.7s var(--ease);
+	}
+
+	.card:hover .tile :global(svg),
+	.card:focus-visible .tile :global(svg) {
+		transform: scale(1.045);
+	}
+
+	.meta {
+		padding-top: 0.9rem;
+	}
+
+	.row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	h3 {
+		font-size: var(--h3);
+		font-weight: 500;
+		letter-spacing: -0.015em;
+		text-transform: uppercase;
+		line-height: 1.05;
+	}
+
+	.sub {
+		margin-top: 0.35rem;
+	}
+
+	.card:hover h3 {
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.12em;
+	}
+</style>

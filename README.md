@@ -1,62 +1,40 @@
-# Astro Starter Kit: Blog
+# evanhgs.fr — Portfolio
+
+Portfolio d'Evan Hugues. Design minimaliste noir/blanc inspiré de [phantom.land](https://www.phantom.land/) : typographie géante, grille de projets, visuels SVG génératifs.
+
+## Performance
+
+Le site est conçu pour être aussi rapide qu'un site statique peut l'être :
+
+- **Zéro JavaScript** livré au navigateur — tout est HTML/CSS (marquee, hover, transitions de page via `@view-transition`, apparitions au scroll via `animation-timeline: view()`).
+- **CSS inliné** dans chaque page (`inlineStylesheets: 'always'`) : aucune requête bloquante.
+- **Une seule ressource critique** : la police Space Grotesk variable (woff2, subset latin, 22 Ko) préchargée.
+- **Visuels de projets en SVG inline** : zéro requête image.
+- **Pré-compression gzip au build** (Dockerfile) servie par `gzip_static` — nginx ne compresse rien à la volée.
+- **Cache immuable 1 an** sur les assets, revalidation sur le HTML, redirection racine en 301 côté nginx.
+
+Poids d'une page : ~7,5 Ko de HTML gzippé + 22 Ko de police (mise en cache un an).
+
+## Stack
+
+- [Astro 6](https://astro.build) (sortie 100 % statique, compilateur Rust)
+- nginx unprivileged (Docker multi-stage)
+- i18n FR/EN (`/fr/…`, `/en/…`), blog en collections de contenu
+
+## Développement
 
 ```sh
-npm create astro@latest -- --template blog
+npm install
+npm run dev        # serveur de dev
+npm run build      # build statique dans ./dist
+npm run preview    # prévisualisation du build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Déploiement
 
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+```sh
+docker compose up -d --build   # build + nginx sur http://localhost:7788
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Le contenu (projets, bio, compétences) vit dans `src/data/content.ts`.
+Les traductions d'interface et les routes localisées dans `src/i18n/ui.ts`.

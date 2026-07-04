@@ -1,8 +1,7 @@
 ---
 title: 'Valenstagram'
 description: 'Instagram à Valence ?'
-pubDate: '25 mars 2026'
-heroImage: '@assets/blog-placeholder-4.jpg'
+pubDate: 2026-03-25
 ---
 
 Peu après avoir finalisé mon application Telebox, j’étais encore dans l’euphorie de la création de sites web dynamiques avec Flask. À ce même moment, je lisais un livre sur Django, un framework Python permettant de créer des sites web très puissants et scalables. Je me suis donc lancé dans ce projet un peu fou : recréer Instagram en open source, avec une API RESTful et un frontend en React, uniquement dans le but d’apprendre React et le développement de SPA dynamiques de qualité.

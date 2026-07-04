@@ -1,8 +1,7 @@
 ---
 title: 'Turbo-selector'
 description: ''
-pubDate: '26 mars 2026'
-heroImage: '@assets/blog-placeholder-2.jpg'
+pubDate: 2026-03-26
 ---
 
 De retour dans la timeline, j’ai pris une petite pause (août à novembre) dans mes projets de code. J’ai trouvé une alternance et je travaillais beaucoup à côté, entre le travail et l’école.

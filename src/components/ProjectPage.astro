@@ -1,0 +1,160 @@
+---
+import ProjectVisual from '@components/ProjectVisual.astro';
+import { content, type Locale } from '@data/content';
+import { blogPostUrl, projectUrl, routes, t } from '@i18n/ui';
+
+interface Props {
+	locale: Locale;
+	projectId: string;
+}
+
+const { locale, projectId } = Astro.props;
+const site = content[locale];
+const index = site.projects.findIndex((p) => p.id === projectId);
+const project = site.projects[index];
+if (!project) throw new Error(`Projet inconnu : ${projectId}`);
+const next = site.projects[(index + 1) % site.projects.length];
+const num = String(index + 1).padStart(2, '0');
+const count = String(site.projects.length).padStart(2, '0');
+---
+
+<article>
+	<section class="head wrap">
+		<p class="micro">
+			<a class="u-link" href={routes[locale].projects}>{t(locale, 'project.label')}</a> — {num}/{count}
+		</p>
+		<h1 class="display">{project.name}</h1>
+		<p class="tagline">{project.tagline}</p>
+	</section>
+
+	<div class="band reveal">
+		<ProjectVisual id={project.id} />
+	</div>
+
+	<section class="wrap body">
+		<dl class="facts">
+			<div>
+				<dt class="micro">{t(locale, 'project.year')}</dt>
+				<dd>{project.year}</dd>
+			</div>
+			<div>
+				<dt class="micro">{t(locale, 'project.role')}</dt>
+				<dd>{project.role}</dd>
+			</div>
+			<div>
+				<dt class="micro">{t(locale, 'project.stack')}</dt>
+				<dd>{project.tech.join(', ')}</dd>
+			</div>
+			<div>
+				<dt class="micro">{t(locale, 'project.links')}</dt>
+				<dd class="links">
+					{project.links.map((l) => (
+						<a class="u-link" href={l.url} rel="noopener">{l.label} ↗</a>
+					))}
+				</dd>
+			</div>
+		</dl>
+
+		<div class="prose">
+			{project.description.map((p) => <p>{p}</p>)}
+			{project.blogSlug && (
+				<a class="post-link u-link" href={blogPostUrl('fr', project.blogSlug)}>
+					{t(locale, 'project.readPost')} ↗
+				</a>
+			)}
+		</div>
+	</section>
+
+	<a class="next wrap" href={projectUrl(locale, next.id)}>
+		<span class="micro">{t(locale, 'project.next')}</span>
+		<span class="next-name h2">{next.name} ↗</span>
+	</a>
+</article>
+
+<style>
+	.head {
+		padding-block: clamp(3rem, 7vw, 6rem) clamp(2rem, 4vw, 3.5rem);
+	}
+
+	.head h1 {
+		margin-block: 0.4rem 1rem;
+	}
+
+	.tagline {
+		max-width: 44ch;
+		font-size: var(--body-lg);
+		font-weight: 300;
+		line-height: 1.4;
+	}
+
+	.band {
+		aspect-ratio: 16 / 7;
+		overflow: hidden;
+	}
+
+	.body {
+		display: grid;
+		gap: clamp(2.5rem, 5vw, 5rem);
+		padding-block: clamp(3rem, 6vw, 5rem);
+	}
+
+	@media (min-width: 900px) {
+		.body {
+			grid-template-columns: 1fr 1.6fr;
+			align-items: start;
+		}
+	}
+
+	.facts {
+		display: grid;
+		gap: 1.4rem;
+		position: sticky;
+		top: 2rem;
+	}
+
+	.facts dt {
+		margin-bottom: 0.25rem;
+	}
+
+	.facts dd {
+		font-size: 1.05rem;
+	}
+
+	.links {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+	}
+
+	.prose p {
+		max-width: 62ch;
+		margin-bottom: 1.4em;
+		font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+		font-weight: 300;
+		line-height: 1.6;
+	}
+
+	.post-link {
+		font-size: 0.85rem;
+		font-weight: 500;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.next {
+		display: block;
+		padding-block: clamp(2.5rem, 5vw, 4rem);
+		border-top: 1px solid var(--line);
+	}
+
+	.next-name {
+		display: block;
+		margin-top: 0.5rem;
+		transition: transform 0.45s var(--ease);
+	}
+
+	.next:hover .next-name,
+	.next:focus-visible .next-name {
+		transform: translateX(0.6rem);
+	}
+</style>

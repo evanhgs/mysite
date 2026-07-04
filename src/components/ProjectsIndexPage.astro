@@ -1,0 +1,124 @@
+---
+import ProjectVisual from '@components/ProjectVisual.astro';
+import { content, type Locale } from '@data/content';
+import { projectUrl, t } from '@i18n/ui';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const site = content[locale];
+---
+
+<section class="head wrap">
+	<p class="micro">{t(locale, 'project.label')}s — ({String(site.projects.length).padStart(2, '0')})</p>
+	<h1 class="display">{t(locale, 'projects.title')}</h1>
+	<p class="intro">{t(locale, 'projects.intro')}</p>
+</section>
+
+<ul class="list">
+	{site.projects.map((p, i) => (
+		<li class="reveal">
+			<a class="row wrap" href={projectUrl(locale, p.id)}>
+				<span class="micro num">{String(i + 1).padStart(2, '0')}</span>
+				<span class="name">{p.name}</span>
+				<span class="tagline">{p.tagline}</span>
+				<span class="micro tags">{p.tags.join(' · ')}</span>
+				<span class="micro year">{p.year}</span>
+				<span class="thumb" aria-hidden="true"><ProjectVisual id={p.id} /></span>
+			</a>
+		</li>
+	))}
+</ul>
+
+<style>
+	.head {
+		padding-block: clamp(3rem, 7vw, 6rem) clamp(2rem, 5vw, 4rem);
+	}
+
+	.head h1 {
+		margin-block: 0.4rem 1.2rem;
+	}
+
+	.intro {
+		max-width: 46ch;
+		font-size: var(--body-lg);
+		font-weight: 300;
+		line-height: 1.4;
+	}
+
+	.list {
+		border-top: 1px solid var(--line);
+	}
+
+	.list li {
+		border-bottom: 1px solid var(--line);
+	}
+
+	.row {
+		position: relative;
+		display: grid;
+		grid-template-columns: 3rem 1fr 1.2fr auto 4rem;
+		align-items: baseline;
+		gap: 1.5rem;
+		padding-block: 1.6rem;
+		transition: padding-left 0.4s var(--ease);
+	}
+
+	.row:hover,
+	.row:focus-visible {
+		padding-left: calc(var(--gutter) + 0.8rem);
+	}
+
+	.name {
+		font-size: clamp(1.5rem, 3.2vw, 2.6rem);
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: -0.015em;
+		line-height: 1;
+	}
+
+	.tagline {
+		font-weight: 300;
+		color: var(--muted);
+	}
+
+	.year {
+		text-align: right;
+	}
+
+	/* Vignette révélée au survol */
+	.thumb {
+		position: absolute;
+		right: clamp(6rem, 18vw, 16rem);
+		top: 50%;
+		z-index: 1;
+		width: clamp(180px, 22vw, 300px);
+		aspect-ratio: 8 / 5;
+		overflow: hidden;
+		pointer-events: none;
+		opacity: 0;
+		transform: translateY(-50%) scale(0.94) rotate(-2deg);
+		transition: opacity 0.35s var(--ease), transform 0.45s var(--ease);
+		box-shadow: 0 24px 60px rgb(0 0 0 / 0.18);
+	}
+
+	.row:hover .thumb,
+	.row:focus-visible .thumb {
+		opacity: 1;
+		transform: translateY(-50%) scale(1) rotate(0deg);
+	}
+
+	@media (max-width: 900px) {
+		.row {
+			grid-template-columns: 2.4rem 1fr auto;
+		}
+
+		.tagline,
+		.tags,
+		.thumb {
+			display: none;
+		}
+	}
+</style>

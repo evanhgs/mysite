@@ -1,17 +1,20 @@
 ---
+import type { Locale } from '@data/content';
+
 interface Props {
 	date: Date;
+	locale?: Locale;
 }
 
-const { date } = Astro.props;
+const { date, locale = 'fr' } = Astro.props;
 ---
 
 <time datetime={date.toISOString()}>
 	{
-		date.toLocaleDateString('fr-fr', {
+		date.toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
 			day: 'numeric',
 			month: 'short',
-			year: 'numeric',			
+			year: 'numeric',
 		})
 	}
 </time>

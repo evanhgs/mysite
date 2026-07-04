@@ -1,8 +1,7 @@
 ---
 title: 'Telebox'
 description: 'Mon premier projet sérieux: Telebox'
-pubDate: '24 mars 2026'
-heroImage: '@assets/blog-placeholder-3.jpg'
+pubDate: 2026-03-24
 ---
 
 À l’époque où je débutais dans la programmation, j’adorais Python et je faisais de tout avec : sites, applications, scripts…

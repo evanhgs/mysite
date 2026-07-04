@@ -1,0 +1,155 @@
+---
+import Marquee from '@components/Marquee.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import { content, type Locale } from '@data/content';
+import { routes, t } from '@i18n/ui';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const site = content[locale];
+const r = routes[locale];
+const count = String(site.projects.length).padStart(2, '0');
+---
+
+<section class="hero wrap">
+	<p class="micro">{site.hero.kicker}</p>
+	<h1 class="display">
+		Evan<br />Hugues<sup>®</sup>
+	</h1>
+	<p class="statement">{site.hero.statement}</p>
+</section>
+
+<Marquee items={site.ticker} />
+
+<section class="works section wrap">
+	<div class="works-head">
+		<h2 class="micro">{t(locale, 'home.selectedWork')}</h2>
+		<span class="micro">({count})</span>
+	</div>
+	<div class="grid">
+		{site.projects.map((p, i) => <ProjectCard project={p} locale={locale} index={i} />)}
+	</div>
+</section>
+
+<hr class="rule wrap-rule" />
+
+<section class="about section wrap">
+	<p class="micro">{t(locale, 'home.aboutLabel')}</p>
+	<p class="teaser h2 reveal">{site.about.teaser}</p>
+	<a class="more u-link" href={r.about}>{t(locale, 'home.moreAbout')} ↗</a>
+</section>
+
+<hr class="rule wrap-rule" />
+
+<section class="caps section wrap">
+	<p class="micro">{t(locale, 'home.capabilities')}</p>
+	<div class="caps-grid">
+		{site.capabilities.map((cap, i) => (
+			<div class="cap reveal">
+				<h3><span class="micro">0{i + 1}</span>{cap.title}</h3>
+				<ul>
+					{cap.items.map((item) => <li>{item}</li>)}
+				</ul>
+			</div>
+		))}
+	</div>
+</section>
+
+<style>
+	.hero {
+		padding-block: clamp(3rem, 8vw, 7rem) clamp(2.5rem, 6vw, 5rem);
+	}
+
+	.hero h1 {
+		margin-block: 0.4rem 1.6rem;
+	}
+
+	.hero sup {
+		font-size: 0.18em;
+		font-weight: 500;
+		vertical-align: super;
+		letter-spacing: 0;
+	}
+
+	.statement {
+		max-width: 34ch;
+		margin-left: auto;
+		font-size: var(--body-lg);
+		font-weight: 300;
+		line-height: 1.4;
+		text-wrap: balance;
+	}
+
+	.works-head {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 2.2rem;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: clamp(2.5rem, 5vw, 4.5rem) clamp(1.5rem, 3vw, 3rem);
+	}
+
+	@media (min-width: 760px) {
+		.grid {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		/* Décalage phantom-like des colonnes (margin, pas transform :
+		   l'animation reveal pilote déjà transform) */
+		.grid > :global(*:nth-child(even)) {
+			margin-top: clamp(2.5rem, 6vw, 5.5rem);
+		}
+
+		.works {
+			padding-bottom: clamp(6rem, 12vw, 10rem);
+		}
+	}
+
+	.wrap-rule {
+		margin-inline: var(--gutter);
+	}
+
+	.about .teaser {
+		max-width: 24ch;
+		margin-block: 1.4rem 2rem;
+		text-transform: none;
+		letter-spacing: -0.01em;
+	}
+
+	.more {
+		font-size: 0.85rem;
+		font-weight: 500;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.caps-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+		gap: 2.5rem;
+		margin-top: 2.2rem;
+	}
+
+	.cap h3 {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-bottom: 1.1rem;
+		font-size: 1.35rem;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
+	}
+
+	.cap li {
+		padding-block: 0.45rem;
+		border-top: 1px solid var(--line);
+		font-size: 0.95rem;
+	}
+</style>

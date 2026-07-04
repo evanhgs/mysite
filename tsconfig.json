@@ -7,7 +7,8 @@
       "@components/*": ["./src/components/*"],
       "@assets/*": ["./src/assets/*"],
       "@layouts/*": ["./src/layouts/*"],
-      "@content/blog*": ["./src/content/blog/*"],
+      "@data/*": ["./src/data/*"],
+      "@i18n/*": ["./src/i18n/*"],
       "@const": ["./src/consts"]
     },
     "strictNullChecks": true
