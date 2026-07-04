@@ -19,9 +19,8 @@ export default defineConfig({
 			provider: memoryCache(),
 		},
 	},
-	security: {
-		csp: true,
-	},
+	// CSP gérée par en-têtes HTTP (nginx.conf / vercel.json), pas par meta :
+	// security.csp est incompatible avec les styles inline de Shiki.
 	i18n: {
 		locales: ['fr', 'en'],
 		defaultLocale: 'fr',
