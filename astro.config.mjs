@@ -2,6 +2,18 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, envField, memoryCache } from 'astro/config';
 
+// Le binding natif du compilateur Rust exige glibc >= 2.35 ; l'image de
+// build Vercel (Amazon Linux 2023) est en glibc 2.34 et ne peut pas le
+// charger. On ne l'active que si le binaire se charge réellement, sinon
+// Astro retombe sur le compilateur WASM standard (sortie identique).
+let rustCompiler = true;
+try {
+	await import('@astrojs/compiler-binding');
+} catch {
+	rustCompiler = false;
+	console.warn('[config] Compilateur Rust indisponible sur cette plateforme, repli sur le compilateur WASM.');
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://evanhgs.fr',
@@ -11,7 +23,7 @@ export default defineConfig({
 		inlineStylesheets: 'always',
 	},
 	experimental: {
-		rustCompiler: true,
+		rustCompiler,
 		queuedRendering: {
 			enabled: true,
 		},
