@@ -3,6 +3,7 @@ import BaseHead from '@components/BaseHead.astro';
 import Footer from '@components/Footer.astro';
 import Header from '@components/Header.astro';
 import { content, type Locale } from '@data/content';
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
 	locale: Locale;
@@ -22,6 +23,7 @@ const site = content[locale];
 		<BaseHead title={title} description={description} locale={locale} altPath={altPath} />
 	</head>
 	<body>
+	<Analytics/>
 		<Header locale={locale} altPath={altPath} />
 		<main>
 			<slot />
