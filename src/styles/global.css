@@ -68,6 +68,10 @@ body {
 	overflow-x: clip;
 }
 
+[hidden] {
+	display: none !important;
+}
+
 img,
 svg,
 video,
@@ -176,7 +180,9 @@ html.lenis body {
 	font-weight: 800;
 	text-transform: uppercase;
 	letter-spacing: -0.01em;
-	line-height: 0.86;
+	/* Pas moins de 0.96 : les capitales accentuées (É, À, Ç) du français
+	   viendraient toucher la ligne du dessus. */
+	line-height: 0.96;
 	text-wrap: balance;
 }
 

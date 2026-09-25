@@ -64,6 +64,16 @@ if (pages.some((p) => p.startsWith('/fr/'))) fail('le sitemap contient /fr/');
 const robots = await readFile(join(DIST, 'robots.txt'), 'utf8');
 if (!/Sitemap: https:\/\/evanhgs\.fr\/sitemap-index\.xml/.test(robots)) fail('robots.txt sans ligne Sitemap');
 
+const contactHtml = await readFile(join(DIST, 'contact/index.html'), 'utf8');
+const payload = contactHtml.match(/data-payload="([^"]+)"/)?.[1];
+if (!payload) fail('contact : aucune donnée chiffrée dans la page');
+else {
+	const { deobfuscate } = await import('altcha-lib/obfuscation');
+	const clear = await deobfuscate(payload);
+	if (clear !== EMAIL) fail(`contact : le déchiffrement donne « ${clear} »`);
+	else pass('contact : la donnée chiffrée se déchiffre en la bonne adresse (Node)');
+}
+
 // ---------------------------------------------------------------- serveur
 const server = spawn(process.execPath, [fileURLToPath(new URL('./serve.mjs', import.meta.url)), String(PORT)], {
 	stdio: ['ignore', 'pipe', 'inherit'],
@@ -92,8 +102,28 @@ try {
 	pass(`${Object.keys(fixtures.redirects).length} redirections, ${fixtures.ok.length} pages 200, 404 réelle`);
 	await ctx.close();
 
-	// ------------------------------------------------------------ pages
+	// ------------------------------------------------------------ contact
+	console.log('\n# Contact');
 	await mkdir(SHOTS, { recursive: true });
+	{
+		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const page = await context.newPage();
+		const raw = await (await page.goto(`${BASE}/contact/`)).text();
+		if (raw.includes(EMAIL)) fail('contact : adresse présente dans le HTML brut');
+		const t0 = Date.now();
+		await page.click('[data-check]');
+		await page.waitForSelector('[data-result]:not([hidden])', { timeout: 30_000 });
+		const shown = await page.getAttribute('[data-email]', 'aria-label');
+		const href = await page.getAttribute('[data-mailto]', 'href');
+		if (shown !== EMAIL) fail(`contact : adresse affichée « ${shown} »`);
+		else if (!href?.startsWith(`mailto:${EMAIL}`)) fail(`contact : lien mailto incorrect ${href}`);
+		else pass(`contact : case cochée → adresse révélée en ${Date.now() - t0} ms`);
+		await page.waitForTimeout(1600);
+		await page.screenshot({ path: join(SHOTS, 'contact-revealed.png') });
+		await context.close();
+	}
+
+	// ------------------------------------------------------------ pages
 	const viewports = [
 		{ name: 'desktop', viewport: { width: 1440, height: 900 } },
 		{ name: 'mobile', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
