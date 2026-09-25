@@ -1,40 +1,67 @@
-# evanhgs.fr — Portfolio
+# evanhgs.fr
 
-Portfolio d'Evan Hugues. Design minimaliste noir/blanc inspiré de [phantom.land](https://www.phantom.land/) : typographie géante, grille de projets, visuels SVG génératifs.
+Le portfolio d’Evan Hugues, technicien supérieur en informatique et cofondateur d’Artinova. Le site est entièrement statique. Il est construit avec Astro 7 et Three.js, en TypeScript, sans framework d’interface.
 
-## Performance
+## Ce qu’il y a dedans
 
-Le site est conçu pour être aussi rapide qu'un site statique peut l'être :
+- **L’accueil** est une scène WebGL pilotée par le défilement. Environ 4 000 cubes forment le nom par anamorphose, puis le triangle impossible de Reutersvärd, dont la jonction ne tient que depuis un seul point de vue.
+- **La page Projets** propose une liste classique et une grille WebGL courbée comme sous une lentille, qu’on fait glisser à la souris ou au doigt.
+- **Les études de cas** sont des fichiers Markdown dans `src/content/projets/`. Chaque schéma d’architecture est décrit dans le front matter et dessiné en SVG au moment du build.
+- **La page Contact** affiche l’adresse e-mail après une preuve de travail ALTCHA calculée dans le navigateur. L’adresse est chiffrée au build et n’apparaît jamais en clair dans `dist/`.
+- **La page 404** montre un escalier de Penrose en WebGL, qu’un petit cube monte sans fin.
 
-- **Zéro JavaScript** livré au navigateur — tout est HTML/CSS (marquee, hover, transitions de page via `@view-transition`, apparitions au scroll via `animation-timeline: view()`).
-- **CSS inliné** dans chaque page (`inlineStylesheets: 'always'`) : aucune requête bloquante.
-- **Une seule ressource critique** : la police Space Grotesk variable (woff2, subset latin, 22 Ko) préchargée.
-- **Visuels de projets en SVG inline** : zéro requête image.
-- **Pré-compression gzip au build** (Dockerfile) servie par `gzip_static` — nginx ne compresse rien à la volée.
-- **Cache immuable 1 an** sur les assets, revalidation sur le HTML, redirection racine en 301 côté nginx.
+Sans WebGL, avec les animations réduites ou avec l’économiseur de données activé, le site affiche des posters SVG dessinés avec la même géométrie.
 
-Poids d'une page : ~7,5 Ko de HTML gzippé + 22 Ko de police (mise en cache un an).
-
-## Stack
-
-- [Astro 6](https://astro.build) (sortie 100 % statique, compilateur Rust)
-- nginx unprivileged (Docker multi-stage)
-- i18n FR/EN (`/fr/…`, `/en/…`), blog en collections de contenu
-
-## Développement
+## Développer
 
 ```sh
 npm install
-npm run dev        # serveur de dev
-npm run build      # build statique dans ./dist
-npm run preview    # prévisualisation du build
+npm run dev       # serveur de développement
+npm run build     # build statique dans dist/
+npm run check     # vérification des types
 ```
 
-## Déploiement
+Il faut Node 22.12 ou une version plus récente.
+
+## Vérifier
 
 ```sh
-docker compose up -d --build   # build + nginx sur http://localhost:7788
+npm run size      # budgets de poids du JS, du CSS, du HTML et de la police
+npm run verify    # build servi comme sur Vercel, puis contrôles dans Chromium
 ```
 
-Le contenu (projets, bio, compétences) vit dans `src/data/content.ts`.
-Les traductions d'interface et les routes localisées dans `src/i18n/ui.ts`.
+`npm run verify` sert `dist/` avec les en-têtes, la CSP et les redirections de `vercel.json`. Il passe ensuite chaque page en revue sur ordinateur et sur mobile. Il vérifie les erreurs de console, les violations de CSP, le SEO de base, les redirections des anciennes adresses, la page Contact, la grille des projets et la page 404. Il s’appuie sur Playwright, dont il faut installer le navigateur une première fois avec `npx playwright install chromium`.
+
+## Images générées
+
+```sh
+npm run og           # images Open Graph dans public/og/
+npm run font:subset  # sous-ensemble de la police Mona Sans
+npm run assets:crop  # recadrage des captures d’Aramis
+```
+
+Les couvertures des projets et les icônes du site sont générées au moment du build, à partir des mêmes fonctions que les illustrations.
+
+## Déployer
+
+Le site est prévu pour Vercel, sans adaptateur ni fonction serverless. Le fichier `vercel.json` contient les redirections des anciennes adresses, une CSP stricte qui n’autorise aucun script inline, et les règles de cache.
+
+L’adresse affichée sur la page Contact se règle avec la variable d’environnement `CONTACT_EMAIL`. Si elle apparaît en clair quelque part dans `dist/`, le build échoue.
+
+Pour héberger le site soi-même, l’image Docker sert le build avec nginx, avec les mêmes en-têtes et les mêmes redirections.
+
+```sh
+docker compose up -d --build   # http://localhost:7788
+```
+
+## Organisation
+
+```
+src/content/projets/   les 9 études de cas en Markdown
+src/data/site.ts       identité, réseaux et compétences
+src/pages/             pages, couvertures et icônes
+src/components/        composants Astro
+src/client/            scripts du navigateur (scènes WebGL, grille, contact)
+src/lib/               géométrie des illusions, SEO, couvertures et schémas
+scripts/               vérification, budgets, images Open Graph et police
+```

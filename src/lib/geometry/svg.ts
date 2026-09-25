@@ -73,10 +73,15 @@ function renderBlocks(
 
 /** Triangle de Reutersvärd de n cubes par côté. */
 export function impossibleTriangleSvg(n = 4, tones: Tones = MONO, title = 'Triangle impossible de Reutersvärd') {
+	const { viewBox, inner } = impossibleTriangleParts(n, tones);
+	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img"><title>${title}</title>${inner}</svg>`;
+}
+
+/** Cadre et contenu du triangle, pour l'insérer dans un autre SVG (icône). */
+export function impossibleTriangleParts(n = 4, tones: Tones = MONO) {
 	const P = projector(ISO_VIEW, REUTERSVARD_ROLL);
 	const blocks = reutersvardPath(n).map((min) => ({ min, size: [1, 1, 1] as Vec3 }));
-	const { viewBox, inner } = renderBlocks(blocks, P.project, P.depth, P.view, tones, reutersvardJoin(n));
-	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img"><title>${title}</title>${inner}</svg>`;
+	return renderBlocks(blocks, P.project, P.depth, P.view, tones, reutersvardJoin(n));
 }
 
 export interface StairsSvg {

@@ -61,6 +61,17 @@ const sitemap = await readFile(join(DIST, 'sitemap-0.xml'), 'utf8');
 const pages = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
 pass(`sitemap : ${pages.length} URL`);
 if (pages.some((p) => p.startsWith('/fr/'))) fail('le sitemap contient /fr/');
+// Icônes générées au build depuis la géométrie du triangle.
+{
+	const ico = await readFile(join(DIST, 'favicon.ico'));
+	const svg = await readFile(join(DIST, 'icon.svg'), 'utf8');
+	const png = await readFile(join(DIST, 'apple-touch-icon.png'));
+	const icoOk = ico.readUInt16LE(2) === 1 && ico.readUInt16LE(4) >= 1;
+	const pngOk = png.subarray(1, 4).toString() === 'PNG' && png.readUInt32BE(16) === 180;
+	if (!icoOk || !svg.startsWith('<svg') || !pngOk) fail('icônes du site invalides');
+	else pass('icônes : favicon.ico, icon.svg, apple-touch-icon.png (180 px)');
+}
+
 const robots = await readFile(join(DIST, 'robots.txt'), 'utf8');
 if (!/Sitemap: https:\/\/evanhgs\.fr\/sitemap-index\.xml/.test(robots)) fail('robots.txt sans ligne Sitemap');
 
@@ -172,6 +183,27 @@ try {
 		if (state.vue !== 'liste' || !state.switcher) fail(`mouvement réduit : ${JSON.stringify(state)}`);
 		else pass('mouvement réduit : liste seule, sans sélecteur');
 		await reduced.close();
+	}
+
+	// ------------------------------------------------------------ mouvement réduit
+	console.log('\n# Mouvement réduit');
+	{
+		const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+		const page = await context.newPage();
+		const scripts = [];
+		page.on('request', (r) => r.resourceType() === 'script' && scripts.push(new URL(r.url()).pathname));
+		await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+		await page.waitForTimeout(1500);
+		const state = await page.evaluate(() => ({
+			live: document.querySelector('[data-scene]')?.classList.contains('is-live'),
+			gl: document.documentElement.dataset.gl,
+			poster: getComputedStyle(document.querySelector('.poster')).display !== 'none',
+		}));
+		const heavy = scripts.filter((p) => /\/(stage|scene|lenis)\./.test(p));
+		if (state.live || state.gl === 'ready' || !state.poster || heavy.length)
+			fail(`accueil en mouvement réduit : ${JSON.stringify({ ...state, heavy })}`);
+		else pass('accueil en mouvement réduit : poster SVG, ni WebGL, ni Three.js, ni Lenis');
+		await context.close();
 	}
 
 	// ------------------------------------------------------------ pages
