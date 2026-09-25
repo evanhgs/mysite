@@ -1,0 +1,200 @@
+---
+// Liste typographique des projets (sans numérotation). Au survol, la
+// couverture suit le curseur (pointeur fin uniquement).
+import { groupByYear, projectUrl, transitionName, type Projet } from '@lib/projects';
+
+interface Props {
+	projects: Projet[];
+	/** Grouper par année (page /projets/) ou liste simple (accueil). */
+	grouped?: boolean;
+	/** Niveau des titres de groupe. */
+	headingLevel?: 2 | 3;
+}
+
+const { projects, grouped = false, headingLevel = 2 } = Astro.props;
+const groups = grouped ? groupByYear(projects) : [{ year: 0, items: projects }];
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<div class="plist" data-project-list>
+	{
+		groups.map((g) => (
+			<section class="group" aria-label={grouped ? String(g.year) : undefined}>
+				{grouped && <Heading class="year label">{g.year}</Heading>}
+				<ul>
+					{g.items.map((p) => (
+						<li>
+							<a
+								class="row"
+								href={projectUrl(p)}
+								data-cover={`/covers/${p.id}.svg`}
+								data-slug={p.id}
+								data-accent={p.data.accent}
+								data-meta={`${p.data.year} · ${p.data.context.split(',')[0]}`}
+								data-astro-prefetch
+								style={`--row-accent: ${p.data.accent}`}
+							>
+								<span class="title" style={`view-transition-name: ${transitionName(p)}`}>
+									{p.data.title}
+								</span>
+								<span class="tagline">{p.data.tagline}</span>
+								<span class="stack">{p.data.stack.slice(0, 4).join(' · ')}</span>
+								<span class="ctx">
+									{grouped ? p.data.context.split(',')[0] : p.data.year}
+									<span class="arrow" aria-hidden="true">
+										↗
+									</span>
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		))
+	}
+	<div class="preview" aria-hidden="true"><img alt="" width="640" height="400" decoding="async" /></div>
+</div>
+
+<script>
+	import '@client/projects/hover-preview';
+</script>
+
+<style>
+	.group + .group {
+		margin-top: clamp(3rem, 6vw, 5rem);
+	}
+
+	.year {
+		padding-bottom: 1rem;
+		color: var(--fg);
+	}
+
+	ul {
+		border-top: 1px solid var(--line);
+	}
+
+	li {
+		border-bottom: 1px solid var(--line);
+	}
+
+	.row {
+		display: grid;
+		grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+		grid-template-areas:
+			'title tagline ctx'
+			'title stack ctx';
+		align-items: center;
+		column-gap: 2rem;
+		row-gap: 0.35rem;
+		padding: clamp(1.1rem, 2.2vw, 1.8rem) 0.75rem;
+		margin-inline: -0.75rem;
+		transition:
+			background 0.35s var(--ease-out),
+			color 0.35s var(--ease-out);
+	}
+
+	.title {
+		grid-area: title;
+		font-size: clamp(2.2rem, 5.4vw, 5.2rem);
+		font-weight: 800;
+		font-stretch: 75%;
+		line-height: 0.9;
+		text-transform: uppercase;
+		width: fit-content;
+	}
+
+	.tagline {
+		grid-area: tagline;
+		align-self: end;
+		font-size: 1.02rem;
+		line-height: 1.35;
+	}
+
+	.stack {
+		grid-area: stack;
+		align-self: start;
+		color: var(--muted);
+		font-size: var(--t-small);
+	}
+
+	.ctx {
+		grid-area: ctx;
+		justify-self: end;
+		display: flex;
+		gap: 0.8rem;
+		align-items: baseline;
+		font-size: var(--t-label);
+		font-weight: 600;
+		font-stretch: 85%;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+
+	.row:hover,
+	.row:focus-visible {
+		background: var(--fg);
+		color: var(--bg);
+	}
+
+	.row:hover .stack,
+	.row:hover .ctx,
+	.row:focus-visible .stack,
+	.row:focus-visible .ctx {
+		color: color-mix(in srgb, var(--bg) 65%, var(--fg));
+	}
+
+	.row:hover .arrow,
+	.row:focus-visible .arrow {
+		transform: translate(0.12em, -0.12em);
+	}
+
+	@media (max-width: 820px) {
+		.row {
+			grid-template-columns: minmax(0, 1fr) auto;
+			grid-template-areas:
+				'title ctx'
+				'tagline tagline'
+				'stack stack';
+			row-gap: 0.6rem;
+		}
+
+		.ctx {
+			align-self: start;
+		}
+	}
+
+	.preview {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 40;
+		width: clamp(14rem, 22vw, 22rem);
+		aspect-ratio: 16 / 10;
+		pointer-events: none;
+		opacity: 0;
+		transform: translate(0, -50%) scale(0.92);
+		transition:
+			opacity 0.3s var(--ease-out),
+			scale 0.4s var(--ease-out);
+		will-change: transform;
+	}
+
+	.preview img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border: 1px solid var(--line-strong);
+	}
+
+	.plist[data-preview='on'] .preview {
+		opacity: 1;
+		transform: translate(0, -50%) scale(1);
+	}
+
+	@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+		.preview {
+			display: none;
+		}
+	}
+</style>

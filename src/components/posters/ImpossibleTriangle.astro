@@ -1,0 +1,21 @@
+---
+// Triangle de Reutersvärd en SVG (poster sans WebGL, mouvement réduit).
+import { impossibleTriangleSvg, MONO, type Tones } from '@lib/geometry/svg';
+
+interface Props {
+	n?: number;
+	tones?: Tones;
+	class?: string;
+}
+
+const { n = 4, tones = MONO, class: className } = Astro.props;
+---
+
+<div class:list={['poster', className]} aria-hidden="true" set:html={impossibleTriangleSvg(n, tones)} />
+
+<style>
+	.poster :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+</style>

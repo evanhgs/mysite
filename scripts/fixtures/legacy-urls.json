@@ -1,0 +1,31 @@
+{
+	"_comment": "Anciennes URL du site FR/EN → destination finale attendue (301). Vérifié par scripts/verify.mjs.",
+	"redirects": {
+		"/en/": "/",
+		"/fr/about/": "/a-propos/",
+		"/en/about/": "/a-propos/",
+		"/fr/projets/": "/projets/",
+		"/en/projects/": "/projets/",
+		"/fr/projets/sae5-aramis/": "/projets/aramis/",
+		"/en/projects/sae5-aramis/": "/projets/aramis/",
+		"/fr/projets/rmce/": "/projets/rmce/",
+		"/en/projects/rmce/": "/projets/rmce/",
+		"/fr/projets/turbo-selector/": "/projets/turbo-selector/",
+		"/fr/projets/valenstagram/": "/projets/valenstagram/",
+		"/en/projects/valenstagram/": "/projets/valenstagram/",
+		"/fr/projets/telebox/": "/projets/telebox/",
+		"/fr/projets/dashdust/": "/projets/",
+		"/fr/projets/hibiki/": "/projets/",
+		"/en/projects/wipytest/": "/projets/",
+		"/fr/blog/": "/projets/",
+		"/en/blog/": "/projets/",
+		"/fr/blog/telebox/": "/projets/telebox/",
+		"/fr/blog/turbo-selector/": "/projets/turbo-selector/",
+		"/fr/blog/valenstagram/": "/projets/valenstagram/",
+		"/fr/blog/inconnu/": "/projets/",
+		"/rss.xml": "/",
+		"/og.png": "/og/accueil.png",
+		"/favicon.svg": "/icon.svg"
+	},
+	"ok": ["/", "/fr/", "/projets/", "/a-propos/", "/contact/", "/mentions-legales/"]
+}

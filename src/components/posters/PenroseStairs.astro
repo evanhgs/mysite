@@ -1,0 +1,58 @@
+---
+// Escalier de Penrose en SVG, avec des étiquettes posées au milieu des volées.
+import { MONO, penroseStairsSvg, type Tones } from '@lib/geometry/svg';
+
+interface Props {
+	tones?: Tones;
+	/** Une étiquette par volée, dans le sens de la montée. */
+	labels?: [string, string, string, string];
+	class?: string;
+}
+
+const { tones = MONO, labels, class: className } = Astro.props;
+const { svg, anchors } = penroseStairsSvg(tones);
+---
+
+<figure class:list={['stairs', className]}>
+	<div class="art" aria-hidden="true" set:html={svg} />
+	{
+		labels && (
+			<ol class="tags">
+				{anchors.map((a, i) => (
+					<li class={`tag tag-${i}`} style={`left: ${a.x.toFixed(2)}%; top: ${a.y.toFixed(2)}%`}>
+						{labels[i]}
+					</li>
+				))}
+			</ol>
+		)
+	}
+</figure>
+
+<style>
+	.stairs {
+		position: relative;
+	}
+
+	.art :global(svg) {
+		width: 100%;
+		height: auto;
+	}
+
+	.tags {
+		list-style: none;
+	}
+
+	.tag {
+		position: absolute;
+		translate: -50% -140%;
+		padding: 0.3em 0.6em;
+		background: #0a0a0a;
+		color: #fff;
+		font-size: clamp(0.7rem, 1vw, 0.85rem);
+		font-weight: 650;
+		font-stretch: 85%;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+</style>

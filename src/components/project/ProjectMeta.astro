@@ -1,0 +1,83 @@
+---
+import type { Projet } from '@lib/projects';
+
+interface Props {
+	project: Projet;
+}
+
+const { data } = Astro.props.project;
+---
+
+<dl class="meta">
+	<div>
+		<dt class="label">Contexte</dt>
+		<dd>{data.context}</dd>
+	</div>
+	<div>
+		<dt class="label">Rôle</dt>
+		<dd>{data.role}</dd>
+	</div>
+	<div>
+		<dt class="label">Année</dt>
+		<dd>{data.period ?? data.year}</dd>
+	</div>
+	{
+		data.status && (
+			<div>
+				<dt class="label">Statut</dt>
+				<dd>{data.status}</dd>
+			</div>
+		)
+	}
+	<div class="wide">
+		<dt class="label">Stack</dt>
+		<dd>{data.stack.join(', ')}</dd>
+	</div>
+	{
+		data.links.length > 0 && (
+			<div class="wide">
+				<dt class="label">Liens</dt>
+				<dd class="links">
+					{data.links.map((l) => (
+						<a class="u-link" href={l.href} rel="noopener">
+							{l.label}
+							<span class="arrow" aria-hidden="true">
+								↗
+							</span>
+						</a>
+					))}
+				</dd>
+			</div>
+		)
+	}
+</dl>
+
+<style>
+	.meta {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+		gap: 1.6rem 2rem;
+		padding-top: 1.6rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.meta .wide {
+		grid-column: 1 / -1;
+	}
+
+	dt {
+		margin-bottom: 0.45rem;
+	}
+
+	dd {
+		font-size: 1.02rem;
+		line-height: 1.45;
+	}
+
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem 1.8rem;
+		font-weight: 600;
+	}
+</style>

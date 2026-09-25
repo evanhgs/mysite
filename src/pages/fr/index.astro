@@ -1,12 +1,8 @@
 ---
-import HomePage from '@components/HomePage.astro';
-import Site from '@layouts/Site.astro';
-import { content } from '@data/content';
-
-const locale = 'fr' as const;
-const { meta } = content[locale];
+// Ancienne accueil (/fr/). Pas de redirection vers / : l'ancienne redirection
+// permanente / → /fr/ peut être en cache chez les visiteurs, et /fr/ → /
+// bouclerait. On sert la même page avec un canonical vers /.
+import Home from '@components/home/Home.astro';
 ---
 
-<Site locale={locale} title={meta.title} description={meta.description} altPath="/en/">
-	<HomePage locale={locale} />
-</Site>
+<Home canonical="/" />

@@ -8,8 +8,8 @@
       "@assets/*": ["./src/assets/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@data/*": ["./src/data/*"],
-      "@i18n/*": ["./src/i18n/*"],
-      "@const": ["./src/consts"]
+      "@lib/*": ["./src/lib/*"],
+      "@client/*": ["./src/client/*"]
     },
     "strictNullChecks": true
   }

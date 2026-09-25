@@ -1,0 +1,279 @@
+---
+import Base from '@layouts/Base.astro';
+import ProjectList from '@components/projects/ProjectList.astro';
+import { getProjects } from '@lib/projects';
+import { breadcrumbNode, graph, projectListNode } from '@lib/seo';
+
+const projects = await getProjects();
+const jsonLd = graph(
+	projectListNode(projects.map((p) => ({ id: p.id, title: p.data.title }))),
+	breadcrumbNode([
+		{ name: 'Accueil', path: '/' },
+		{ name: 'Projets', path: '/projets/' },
+	]),
+);
+---
+
+<Base
+	title="Projets | Evan Hugues"
+	description="Artinova, Universe, Valenstagram, Clipboard et d’autres projets, avec pour chacun la stack, l’infrastructure, le fonctionnement et les difficultés."
+	image="/og/projets.png"
+	jsonLd={jsonLd}
+>
+	<header class="head wrap">
+		<h1 class="display">Projets</h1>
+		<div class="head-foot">
+			<p class="lead intro">
+				Du SaaS en production aux petits outils système. Pour chaque projet, je raconte la stack, les choix d’infrastructure, le
+				fonctionnement, la principale difficulté et ce que j’en ai retiré.
+			</p>
+			<div class="views" role="group" aria-label="Affichage des projets" data-views>
+				<button type="button" data-view="grille" aria-pressed="false">Grille</button>
+				<button type="button" data-view="liste" aria-pressed="true">Liste</button>
+			</div>
+		</div>
+	</header>
+
+	<section class="wrap list" aria-label="Tous les projets" data-list>
+		<ProjectList projects={projects} grouped />
+	</section>
+
+	<div class="grid-stage" data-grid aria-hidden="true">
+		<div class="grid-pin" data-grid-pin>
+			<canvas class="grid-canvas"></canvas>
+			<p class="grid-loading label">Chargement de la grille</p>
+			<div class="grid-ui">
+				<p class="grid-caption" data-grid-caption>
+					<span class="hint-fine">Glisser pour explorer, cliquer pour ouvrir</span><span class="hint-touch"
+						>Glisser pour explorer, toucher pour ouvrir</span
+					>
+				</p>
+				<p class="grid-count label">{projects.length} projets</p>
+			</div>
+		</div>
+	</div>
+</Base>
+
+<script>
+	import '@client/projects/views';
+</script>
+
+<style>
+	.head {
+		display: grid;
+		gap: 2rem;
+		padding-top: calc(var(--header-h) + clamp(3rem, 8vw, 7rem));
+		padding-bottom: clamp(3rem, 6vw, 5rem);
+	}
+
+	.head-foot {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: end;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+
+	.intro {
+		max-width: 34ch;
+	}
+
+	.list {
+		padding-bottom: var(--section);
+	}
+
+	/* --- Sélecteur de vue : deux boutons rectangulaires accolés --- */
+	.views {
+		display: none;
+		border: 1px solid var(--line-strong);
+		border-radius: 2px;
+	}
+
+	:global(:root[data-vue]) .views {
+		display: flex;
+	}
+
+	.views button {
+		padding: 0.85em 1.3em;
+		font-size: var(--t-label);
+		font-weight: 600;
+		font-stretch: 85%;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: var(--muted);
+		transition:
+			background 0.3s var(--ease-out),
+			color 0.3s var(--ease-out);
+	}
+
+	.views button + button {
+		border-left: 1px solid var(--line-strong);
+	}
+
+	.views button:hover {
+		color: var(--fg);
+	}
+
+	.views button[aria-pressed='true'] {
+		background: var(--fg);
+		color: var(--bg);
+	}
+
+	/* --- Grille WebGL : bloc collant, le défilement de la page fait défiler
+	   la grille verticalement, puis la page reprend. --- */
+	.grid-stage {
+		display: none;
+		position: relative;
+		height: 300svh;
+	}
+
+	.grid-pin {
+		position: sticky;
+		top: 0;
+		height: 100svh;
+		overflow: hidden;
+	}
+
+	.grid-canvas {
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		touch-action: pan-y;
+		transition: opacity 0.9s var(--ease-out);
+	}
+
+	.grid-stage[data-ready] .grid-canvas {
+		opacity: 1;
+	}
+
+	/* Fondu sous l'en-tête fixe et derrière la légende. */
+	.grid-pin::before,
+	.grid-pin::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		z-index: 1;
+		pointer-events: none;
+	}
+
+	.grid-pin::before {
+		top: 0;
+		height: calc(var(--header-h) + 3rem);
+		background: linear-gradient(var(--bg) 35%, transparent);
+	}
+
+	.grid-pin::after {
+		bottom: 0;
+		height: 9rem;
+		background: linear-gradient(transparent, color-mix(in srgb, var(--bg) 85%, transparent));
+	}
+
+	.grid-loading {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+	}
+
+	.grid-stage[data-ready] .grid-loading {
+		display: none;
+	}
+
+	.grid-ui {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 2;
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 2rem;
+		padding: 1.4rem var(--gutter);
+		pointer-events: none;
+	}
+
+	.grid-caption {
+		display: grid;
+		gap: 0.3rem;
+		max-width: 46ch;
+		font-size: var(--t-small);
+		color: var(--muted);
+	}
+
+	.grid-caption :global(strong) {
+		font-size: var(--t-h3);
+		font-weight: 800;
+		font-stretch: 75%;
+		line-height: 1;
+		text-transform: uppercase;
+		color: var(--fg);
+	}
+
+	.hint-touch {
+		display: none;
+	}
+
+	@media (pointer: coarse) {
+		.hint-fine {
+			display: none;
+		}
+
+		.hint-touch {
+			display: inline;
+		}
+
+		.grid-stage {
+			height: 240svh;
+		}
+	}
+
+	/* Vue grille : choisie par le script, ou par défaut sur grand écran à
+	   pointeur fin avant qu'il ne s'exécute (pas de saut à l'arrivée). */
+	:global(:root[data-vue='grille']) .grid-stage {
+		display: block;
+	}
+
+	@media (scripting: enabled) and (pointer: fine) and (min-width: 60rem) and (prefers-reduced-motion: no-preference) {
+		:global(:root:not([data-vue])) .grid-stage {
+			display: block;
+		}
+
+		:global(:root:not([data-vue])) .list {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+	}
+
+	/* En grille, la liste reste lisible par les lecteurs d'écran ; au clavier,
+	   elle s'ouvre en surimpression dès qu'un de ses liens prend le focus. */
+	:global(:root[data-vue='grille']) .list:not(:focus-within) {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	:global(:root[data-vue='grille']) .list :global(.preview) {
+		display: none;
+	}
+
+	:global(:root[data-vue='grille']) .list:focus-within {
+		position: fixed;
+		inset: var(--header-h) 0 0;
+		z-index: 45;
+		overflow: auto;
+		padding-block: 2rem 4rem;
+		background: var(--bg);
+		overscroll-behavior: contain;
+	}
+</style>

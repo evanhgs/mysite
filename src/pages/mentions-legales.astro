@@ -1,0 +1,76 @@
+---
+import Base from '@layouts/Base.astro';
+import { site } from '@data/site';
+import { breadcrumbNode, graph } from '@lib/seo';
+---
+
+<Base
+	title="Mentions légales | Evan Hugues"
+	description="Les informations légales de evanhgs.fr, le portfolio d’Evan Hugues, sur l’éditeur, l’hébergement, les données personnelles, l’audience et les crédits."
+	jsonLd={graph(breadcrumbNode([{ name: 'Accueil', path: '/' }, { name: 'Mentions légales', path: '/mentions-legales/' }]))}
+>
+	<article class="wrap legal">
+		<header>
+			<p class="label">Informations</p>
+			<h1 class="h1">Mentions légales</h1>
+		</header>
+
+		<div class="prose">
+			<h2>Éditeur</h2>
+			<p>
+				Le site evanhgs.fr est édité par {site.name}, à titre personnel. Le directeur de la publication est {site.name}. Pour toute
+				demande, passez par la <a href="/contact/">page contact</a>.
+			</p>
+
+			<h2>Hébergement</h2>
+			<p>Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, aux États-Unis. Plus d’informations sur vercel.com.</p>
+
+			<h2>Données personnelles et cookies</h2>
+			<p>
+				Ce site ne dépose aucun cookie et ne contient aucun formulaire. La mesure d’audience, assurée par Vercel Web Analytics, est
+				anonyme et n’utilise ni cookie ni identifiant persistant. L’hébergeur conserve des journaux techniques, comme l’adresse IP,
+				la date et la page demandée, pour la sécurité et le bon fonctionnement du service.
+			</p>
+			<p>
+				La vérification de la page contact se fait entièrement dans votre navigateur, et aucune donnée n’est envoyée. Deux réglages
+				sont enregistrés sur votre appareil et n’en sortent jamais, l’état de l’interrupteur d’animations et la vue choisie sur la
+				page Projets.
+			</p>
+
+			<h2>Propriété intellectuelle</h2>
+			<p>
+				Les textes, les visuels et le code du site sont © {new Date().getFullYear()} {site.name}. Le nom et le logo Artinova
+				appartiennent à Artinova. Les captures d’Aramis viennent du projet universitaire du même nom.
+			</p>
+
+			<h2>Crédits</h2>
+			<p>
+				La police Mona Sans est publiée par GitHub sous licence SIL Open Font License. Le site utilise Astro, Three.js, Lenis et
+				altcha-lib, sous licence MIT. Le code source est disponible sur
+				<a href="https://github.com/evanhgs/mysite" rel="noopener">github.com/evanhgs/mysite</a>.
+			</p>
+		</div>
+	</article>
+</Base>
+
+<style>
+	.legal {
+		display: grid;
+		gap: 3rem;
+		padding-top: calc(var(--header-h) + clamp(3rem, 8vw, 6rem));
+		padding-bottom: var(--section);
+	}
+
+	header {
+		display: grid;
+		gap: 1.4rem;
+	}
+
+	.prose h2 {
+		margin-top: 2.2rem;
+		font-size: 1.05rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+</style>

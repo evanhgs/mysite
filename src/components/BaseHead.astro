@@ -1,46 +1,67 @@
 ---
 import '../styles/global.css';
-import type { Locale } from '@data/content';
-import { otherLocale } from '@i18n/ui';
+import { Font } from 'astro:assets';
+import { site } from '@data/site';
 
-interface Props {
+export interface Props {
 	title: string;
 	description: string;
-	locale: Locale;
-	/** Chemin de la même page dans l'autre langue (hreflang). */
-	altPath?: string;
+	/** Chemin canonique si différent de l'URL courante (ex. /fr/ → /). */
+	canonical?: string;
+	/** Image Open Graph (chemin absolu depuis la racine). */
+	image?: string;
+	imageAlt?: string;
+	type?: 'website' | 'profile' | 'article';
+	/** Page hors index (404) : ni canonical ni indexation. */
+	noindex?: boolean;
 }
 
-const { title, description, locale, altPath } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL('/og.png', Astro.site);
-const alt = altPath ? new URL(altPath, Astro.site) : undefined;
+const {
+	title,
+	description,
+	canonical,
+	image = '/og/accueil.png',
+	imageAlt = `${site.name}, ${site.headline.charAt(0).toLowerCase()}${site.headline.slice(1)}`,
+	type = 'website',
+	noindex = false,
+} = Astro.props;
+
+const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
 ---
 
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>{title}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonicalURL} />
-{alt && <link rel="alternate" hreflang={otherLocale(locale)} href={alt} />}
-{alt && <link rel="alternate" hreflang={locale} href={canonicalURL} />}
-
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" href="/favicon.ico" sizes="32x32" />
-<link rel="sitemap" href="/sitemap-index.xml" />
-<link rel="alternate" type="application/rss+xml" title="Evan Hugues" href={new URL('rss.xml', Astro.site)} />
+{noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonicalURL} />}
+{!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
+<meta name="author" content={site.name} />
 <meta name="generator" content={Astro.generator} />
-<meta name="theme-color" content="#f1f0ec" />
 
-<link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+<Font cssVariable="--font-mona" preload />
 
-<meta property="og:type" content="website" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" type="image/svg+xml" href="/icon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<meta name="theme-color" content="#0a0a0a" />
+<meta name="color-scheme" content="dark" />
+
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content="fr_FR" />
+<meta property="og:type" content={type} />
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
-<meta property="og:locale" content={locale === 'fr' ? 'fr_FR' : 'en_US'} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={imageAlt} />
+<slot />

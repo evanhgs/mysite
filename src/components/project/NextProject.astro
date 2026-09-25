@@ -1,0 +1,71 @@
+---
+import { projectUrl, type Projet } from '@lib/projects';
+
+interface Props {
+	next: Projet;
+}
+
+const { next } = Astro.props;
+---
+
+<nav class="next wrap" aria-label="Projet suivant">
+	<a class="next-link" href={projectUrl(next)} style={`--next-accent: ${next.data.accent}`}>
+		<span class="label">Projet suivant</span>
+		<span class="next-title">{next.data.title}<span class="arrow" aria-hidden="true">→</span></span>
+		<span class="next-tagline">{next.data.tagline}</span>
+	</a>
+	<a class="all u-link label" href="/projets/">Tous les projets</a>
+</nav>
+
+<style>
+	.next {
+		display: grid;
+		gap: 2rem;
+		padding-top: var(--section);
+	}
+
+	.next-link {
+		display: grid;
+		gap: 1rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.next-title {
+		display: flex;
+		align-items: baseline;
+		gap: 0.2em;
+		font-size: var(--t-display);
+		font-weight: 800;
+		font-stretch: 75%;
+		line-height: 0.86;
+		text-transform: uppercase;
+		transition: color 0.45s var(--ease-out);
+	}
+
+	.next-title .arrow {
+		font-size: 0.45em;
+	}
+
+	.next-link:hover .next-title,
+	.next-link:focus-visible .next-title {
+		color: var(--next-accent);
+	}
+
+	.next-link:hover .arrow,
+	.next-link:focus-visible .arrow {
+		transform: translateX(0.2em);
+	}
+
+	.next-tagline {
+		max-width: 40ch;
+		color: var(--muted);
+		font-size: var(--t-lead);
+		line-height: 1.25;
+	}
+
+	.all {
+		justify-self: start;
+		color: var(--fg);
+	}
+</style>

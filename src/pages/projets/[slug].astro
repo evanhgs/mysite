@@ -1,0 +1,204 @@
+---
+import { render } from 'astro:content';
+import Base from '@layouts/Base.astro';
+import DiagramFlow from '@components/DiagramFlow.astro';
+import Gallery from '@components/project/Gallery.astro';
+import KeyFigures from '@components/project/KeyFigures.astro';
+import NextProject from '@components/project/NextProject.astro';
+import ProjectMeta from '@components/project/ProjectMeta.astro';
+import SlicedTitle from '@components/project/SlicedTitle.astro';
+import { getProjects, nextProject, transitionName, type Projet } from '@lib/projects';
+import { splitSections } from '@lib/sections';
+import { breadcrumbNode, graph, projectNode } from '@lib/seo';
+
+export async function getStaticPaths() {
+	const projects = await getProjects();
+	return projects.map((project) => ({
+		params: { slug: project.id },
+		props: { project, next: nextProject(projects, project) },
+	}));
+}
+
+interface Props {
+	project: Projet;
+	next: Projet;
+}
+
+const { project, next } = Astro.props;
+const { data } = project;
+const { headings } = await render(project);
+const sections = splitSections(project.id, project.rendered?.html ?? '', headings);
+
+const jsonLd = graph(
+	projectNode({ id: project.id, ...data }),
+	breadcrumbNode([
+		{ name: 'Accueil', path: '/' },
+		{ name: 'Projets', path: '/projets/' },
+		{ name: data.title, path: `/projets/${project.id}/` },
+	]),
+);
+---
+
+<Base
+	title={`${data.title} | Evan Hugues`}
+	description={data.description}
+	image={`/og/${project.id}.png`}
+	imageAlt={`${data.title} : ${data.tagline}`}
+	type="article"
+	accent={data.accent}
+	jsonLd={jsonLd}
+>
+	<article class="projet">
+		<header class="head wrap">
+			<nav class="crumbs label" aria-label="Fil d’Ariane">
+				<a class="u-link" href="/">Accueil</a>
+				<span aria-hidden="true">/</span>
+				<a class="u-link" href="/projets/">Projets</a>
+			</nav>
+			<p class="kicker label">{data.context} · {data.period ?? data.year}</p>
+			<SlicedTitle text={data.title} class="p-title" style={`view-transition-name: ${transitionName(project)}`} />
+			<p class="lead tagline">{data.tagline}</p>
+		</header>
+
+		<figure class="cover">
+			<img src={`/covers/${project.id}.svg`} alt="" width="1600" height="1000" fetchpriority="high" />
+		</figure>
+
+		<section class="intro wrap">
+			<p class="statement">{data.statement}</p>
+			<ProjectMeta project={project} />
+		</section>
+
+		<KeyFigures figures={data.figures} />
+
+		<div class="body wrap">
+			{
+				sections.map((s) => (
+					<section class="section-row" id={s.slug}>
+						<h2 class="sec-title">{s.heading}</h2>
+						<div class="prose sec-body" set:html={s.html} />
+						{s.heading.startsWith('Comment') && data.diagram && (
+							<div class="sec-wide">
+								<DiagramFlow diagram={data.diagram} id={`schema-${project.id}`} />
+							</div>
+						)}
+					</section>
+				))
+			}
+		</div>
+
+		<Gallery items={data.gallery} />
+		<NextProject next={next} />
+	</article>
+</Base>
+
+<script>
+	import '@client/project/sliced-title';
+</script>
+
+<style>
+	.head {
+		display: grid;
+		gap: 1.4rem;
+		padding-top: calc(var(--header-h) + clamp(2.5rem, 7vw, 6rem));
+		padding-bottom: clamp(2rem, 4vw, 3.5rem);
+	}
+
+	.crumbs {
+		display: flex;
+		gap: 0.6rem;
+	}
+
+	.kicker {
+		color: var(--accent);
+	}
+
+	.head :global(.p-title) {
+		font-size: clamp(3.6rem, 16vw, 17rem);
+		font-weight: 800;
+		font-stretch: 75%;
+		line-height: 0.82;
+		letter-spacing: -0.015em;
+		text-transform: uppercase;
+		overflow-wrap: anywhere;
+	}
+
+	.tagline {
+		max-width: 30ch;
+	}
+
+	.cover img {
+		width: 100%;
+		height: clamp(16rem, 52vw, 44rem);
+		object-fit: cover;
+		border-block: 1px solid var(--line);
+	}
+
+	.intro {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 2.5rem 1.25rem;
+		padding-block: clamp(3rem, 7vw, 6rem);
+	}
+
+	.statement {
+		grid-column: 1 / span 8;
+		font-size: var(--t-h3);
+		font-weight: 600;
+		font-stretch: 88%;
+		line-height: 1.12;
+		letter-spacing: -0.012em;
+		text-wrap: balance;
+	}
+
+	.intro :global(.meta) {
+		grid-column: 1 / -1;
+	}
+
+	.body {
+		display: grid;
+		gap: clamp(3.5rem, 8vw, 7rem);
+		padding-top: var(--section);
+	}
+
+	.section-row {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 1.25rem;
+		row-gap: 1.5rem;
+		scroll-margin-top: calc(var(--header-h) + 1rem);
+	}
+
+	.sec-title {
+		grid-column: 1 / span 4;
+		align-self: start;
+		position: sticky;
+		top: calc(var(--header-h) + 1.5rem);
+		font-size: clamp(1.6rem, 3vw, 2.8rem);
+		font-weight: 800;
+		font-stretch: 75%;
+		line-height: 1.02;
+		text-transform: uppercase;
+	}
+
+	.sec-body {
+		grid-column: 5 / span 8;
+		font-size: 1.08rem;
+	}
+
+	.sec-wide {
+		grid-column: 1 / -1;
+	}
+
+	@media (max-width: 860px) {
+		.statement,
+		.sec-title,
+		.sec-body {
+			grid-column: 1 / -1;
+		}
+
+		.sec-title {
+			position: static;
+		}
+	}
+</style>
