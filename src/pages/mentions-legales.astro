@@ -1,7 +1,75 @@
 ---
 import Base from '@layouts/Base.astro';
+import { site } from '@data/site';
+import { breadcrumbNode, graph } from '@lib/seo';
 ---
 
-<Base title="Mentions légales — Evan Hugues" description="Éditeur, hébergement, données personnelles et mesure d’audience du site evanhgs.fr.">
-	<section class="wrap section"><h1 class="h1">Mentions légales</h1></section>
+<Base
+	title="Mentions légales — Evan Hugues"
+	description="Éditeur, hébergement, données personnelles, mesure d’audience et crédits du site evanhgs.fr, portfolio d’Evan Hugues, ingénieur logiciel."
+	jsonLd={graph(breadcrumbNode([{ name: 'Accueil', path: '/' }, { name: 'Mentions légales', path: '/mentions-legales/' }]))}
+>
+	<article class="wrap legal">
+		<header>
+			<p class="label">Informations</p>
+			<h1 class="h1">Mentions légales</h1>
+		</header>
+
+		<div class="prose">
+			<h2>Éditeur</h2>
+			<p>
+				Le site evanhgs.fr est édité par {site.name}, à titre personnel. Directeur de la publication : {site.name}. Pour toute demande,
+				passez par la <a href="/contact/">page contact</a>.
+			</p>
+
+			<h2>Hébergement</h2>
+			<p>Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis — vercel.com.</p>
+
+			<h2>Données personnelles et cookies</h2>
+			<p>
+				Ce site ne dépose aucun cookie et ne contient aucun formulaire. La mesure d’audience (Vercel Web Analytics) est anonyme,
+				sans cookie ni identifiant persistant. L’hébergeur conserve des journaux techniques (adresse IP, date, page demandée)
+				pour la sécurité et le bon fonctionnement du service.
+			</p>
+			<p>
+				La vérification de la page contact s’exécute entièrement dans votre navigateur : aucune donnée n’est envoyée. Deux réglages
+				sont stockés localement, sans jamais quitter votre appareil : l’état de l’interrupteur d’animations et la vue choisie sur
+				la page Projets.
+			</p>
+
+			<h2>Propriété intellectuelle</h2>
+			<p>
+				Textes, visuels et code du site : © {new Date().getFullYear()} {site.name}. Le nom et le logo Artinova appartiennent à
+				Artinova. Les captures d’Aramis sont issues du projet universitaire du même nom.
+			</p>
+
+			<h2>Crédits</h2>
+			<p>
+				Police Mona Sans (GitHub, licence SIL Open Font License). Astro, Three.js, Lenis et altcha-lib (licences MIT). Code source :
+				<a href="https://github.com/evanhgs/mysite" rel="noopener">github.com/evanhgs/mysite</a>.
+			</p>
+		</div>
+	</article>
 </Base>
+
+<style>
+	.legal {
+		display: grid;
+		gap: 3rem;
+		padding-top: calc(var(--header-h) + clamp(3rem, 8vw, 6rem));
+		padding-bottom: var(--section);
+	}
+
+	header {
+		display: grid;
+		gap: 1.4rem;
+	}
+
+	.prose h2 {
+		margin-top: 2.2rem;
+		font-size: 1.05rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+</style>

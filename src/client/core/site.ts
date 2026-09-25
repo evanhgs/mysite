@@ -1,6 +1,7 @@
 // Script commun à toutes les pages : horloge de l'en-tête et interrupteur
 // d'animations du pied de page.
 import { prefs } from './prefs';
+import { startSmoothScroll } from './smooth-scroll';
 
 function startClock() {
 	const el = document.querySelector<HTMLTimeElement>('[data-clock]');
@@ -31,3 +32,4 @@ function motionToggle() {
 
 startClock();
 motionToggle();
+startSmoothScroll();

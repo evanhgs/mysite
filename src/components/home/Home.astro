@@ -1,7 +1,14 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '@layouts/Base.astro';
-import { site } from '@data/site';
+import ProjectList from '@components/projects/ProjectList.astro';
+import ImpossibleTriangle from '@components/posters/ImpossibleTriangle.astro';
+import PenroseStairs from '@components/posters/PenroseStairs.astro';
+import { artinova, site, skills } from '@data/site';
+import { ARTINOVA_TONES } from '@lib/geometry/svg';
+import { getProjects } from '@lib/projects';
 import { artinovaNode, graph, personNode, websiteNode } from '@lib/seo';
+import logo from '../../assets/brand/artinova-logo-blanc.png';
 
 interface Props {
 	/** Canonical explicite (utilisé par l'ancienne URL /fr/). */
@@ -9,6 +16,9 @@ interface Props {
 }
 
 const { canonical } = Astro.props;
+const projects = await getProjects();
+const flagship = projects.find((p) => p.id === 'artinova')!;
+const others = projects.filter((p) => p.id !== 'artinova');
 ---
 
 <Base
@@ -18,17 +28,494 @@ const { canonical } = Astro.props;
 	type="profile"
 	jsonLd={graph(personNode(), websiteNode(), artinovaNode())}
 >
-	<section class="wrap hero">
-		<h1 class="display">Evan Hugues</h1>
-		<p class="lead">{site.headline}.</p>
+	<section class="scene" data-scene data-station="nom" aria-labelledby="hero-name">
+		<div class="pin">
+			<canvas class="gl" data-gl-canvas aria-hidden="true"></canvas>
+			<div class="poster" aria-hidden="true">
+				<ImpossibleTriangle />
+			</div>
+
+			<div class="hero wrap">
+				<p class="label kicker">{site.role} · {site.location}</p>
+				<h1 id="hero-name" class="display hero-name" data-hero-name>Evan Hugues</h1>
+				<p class="lead hero-line">Cofondateur et CTO d’Artinova. Je conçois des systèmes simples en surface, rigoureux dessous.</p>
+			</div>
+
+			<ul class="captions wrap" aria-label="L’illusion, pas à pas">
+				<li data-at="revelation">Tout est une question de point de vue. Vu d’ici, ce n’est qu’un nuage de cubes.</li>
+				<li data-at="triangle">Triangle impossible, d’après Oscar Reutersvärd (1934).</li>
+				<li data-at="faille">Il suffisait de tourner autour.</li>
+			</ul>
+
+			<div class="scene-foot wrap">
+				<p class="label hint">Bougez la souris, puis faites défiler</p>
+				<a class="label skip-scene u-link" href="#artinova">Passer l’illusion</a>
+			</div>
+		</div>
+	</section>
+
+	<section id="artinova" class="artinova" aria-labelledby="artinova-title">
+		<div class="wrap art">
+			<header class="art-head">
+				<p class="label art-kicker">Projet principal · cofondateur et CTO</p>
+				<Image src={logo} alt="Artinova" class="art-logo" width={420} widths={[210, 420, 840]} sizes="(max-width: 700px) 60vw, 420px" />
+				<h2 id="artinova-title" class="art-title">
+					Le logiciel qui accompagne les artisans du bâtiment, du premier appel client jusqu’au paiement.
+				</h2>
+			</header>
+
+			<PenroseStairs class="art-stairs" tones={ARTINOVA_TONES} labels={['Premier appel', 'Devis', 'Facture', 'Paiement']} />
+
+			<div class="art-body">
+				<p class="art-lead">
+					CRM, devis, factures, relances, paiements et facture électronique 2026, dans un seul outil conçu avec des artisans. Je porte
+					l’architecture, le back-end et l’infrastructure.
+				</p>
+				<ul class="art-points">
+					<li><strong>Des obligations légales devenues des invariants.</strong> Factures immuables garanties par la base, numérotation continue sous verrou.</li>
+					<li><strong>Un monolithe modulaire en TypeScript.</strong> Next.js, NestJS, BullMQ et PostgreSQL : un seul langage, des frontières vérifiées.</li>
+					<li><strong>La facture électronique 2026.</strong> Factur-X et UBL via une plateforme agréée, isolée derrière un port.</li>
+					<li><strong>AWS décrit en Terraform.</strong> ECS Fargate, RDS, déploiements sans clé longue durée, staging éteint la nuit.</li>
+				</ul>
+				<div class="art-actions">
+					<a class="btn art-btn" href="/projets/artinova/" data-astro-prefetch>Lire l’étude de cas <span class="arrow" aria-hidden="true">→</span></a>
+					<a class="u-link" href={artinova.url} rel="noopener">artinova.fr <span aria-hidden="true">↗</span></a>
+				</div>
+			</div>
+
+			<ul class="art-figures" aria-label="Artinova en chiffres">
+				{
+					flagship.data.figures.map((f) => (
+						<li>
+							<span class="value">{f.value}</span>
+							<span class="what">{f.label}</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</section>
+
+	<section class="selected wrap section" aria-labelledby="selected-title">
+		<header class="sel-head">
+			<h2 id="selected-title" class="h2">Autres projets</h2>
+			<a class="label u-link all" href="/projets/">Tous les projets ({projects.length})</a>
+		</header>
+		<ProjectList projects={others.slice(0, 5)} headingLevel={3} />
+	</section>
+
+	<section class="profile wrap section" aria-labelledby="profile-title">
+		<h2 id="profile-title" class="h2 prof-title">Du code au serveur qui l’héberge.</h2>
+		<div class="prof-body">
+			<p class="lead">
+				Diplômé d’un BUT Informatique à l’IUT de Valence, je construis des applications de bout en bout : conception d’API, bases de
+				données, interfaces, infrastructure et exploitation. La sécurité traverse tout, et je la pratique aussi en offensif.
+			</p>
+			<dl class="skills">
+				{
+					skills.map((s) => (
+						<div>
+							<dt class="label">{s.domain}</dt>
+							<dd>{s.text}</dd>
+						</div>
+					))
+				}
+			</dl>
+			<a class="btn" href="/a-propos/">Le parcours complet <span class="arrow" aria-hidden="true">→</span></a>
+		</div>
 	</section>
 </Base>
 
+<script>
+	import '@client/home/boot';
+</script>
+
 <style>
+	/* ---------------- Scène d'illusion ----------------
+	   Par défaut (sans JS, mouvement réduit, sans WebGL) : présentation
+	   statique, titre et poster SVG. Avec .is-live (posé par le script) :
+	   la scène s'allonge et se déroule au défilement. */
+	.scene {
+		position: relative;
+	}
+
+	.scene.is-live {
+		height: 400svh;
+	}
+
+	@media (max-width: 700px) {
+		.scene.is-live {
+			height: 300svh;
+		}
+	}
+
+	.pin {
+		position: sticky;
+		top: 0;
+		height: 100svh;
+		min-height: 34rem;
+		overflow: clip;
+	}
+
+	.gl {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		transition: opacity 0.9s var(--ease-out);
+	}
+
+	:global(html[data-gl='ready']) .gl {
+		opacity: 1;
+	}
+
 	.hero {
-		min-height: 100svh;
+		position: absolute;
+		inset: 0;
 		display: grid;
 		align-content: center;
+		gap: 1.6rem;
+		pointer-events: none;
+		transition:
+			opacity 0.6s var(--ease-out),
+			translate 0.8s var(--ease-out);
+	}
+
+	.hero-name {
+		font-size: clamp(3.6rem, 15vw, 17rem);
+		line-height: 0.86;
+		transition: opacity 0.5s linear;
+	}
+
+	.hero-line {
+		max-width: 26ch;
+	}
+
+	.poster {
+		position: absolute;
+		right: var(--gutter);
+		top: 50%;
+		width: min(34vw, 30rem);
+		translate: 0 -50%;
+		transition:
+			opacity 0.8s var(--ease-out),
+			scale 1s var(--ease-out);
+	}
+
+	@media (max-width: 700px) {
+		.poster {
+			top: auto;
+			bottom: 2rem;
+			right: -3rem;
+			width: 60vw;
+			translate: none;
+			opacity: 0.35;
+		}
+	}
+
+	.captions,
+	.scene-foot {
+		display: none;
+	}
+
+	/* --- Mode scène --- */
+	.is-live .captions {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: clamp(5rem, 12vh, 8rem);
+		display: grid;
+		pointer-events: none;
+	}
+
+	.is-live .captions li {
+		grid-area: 1 / 1;
+		max-width: 24ch;
+		font-size: var(--t-lead);
+		font-weight: 500;
+		line-height: 1.2;
+		opacity: 0;
+		translate: 0 0.6rem;
+		transition:
+			opacity 0.6s var(--ease-out),
+			translate 0.6s var(--ease-out);
+	}
+
+	.is-live[data-station='revelation'] li[data-at='revelation'],
+	.is-live[data-station='triangle'] li[data-at='triangle'],
+	.is-live[data-station='faille'] li[data-at='faille'] {
+		opacity: 1;
+		translate: none;
+	}
+
+	.is-live .scene-foot {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 1.6rem;
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.is-live .scene-foot a {
+		pointer-events: auto;
+	}
+
+	.is-live:not([data-station='nom']) .hint {
+		opacity: 0;
+	}
+
+	.is-live:not([data-station='nom']) .hero {
+		opacity: 0;
+		translate: 0 -3vh;
+	}
+
+	/* Le poster n'apparaît en mode scène que si le WebGL n'est pas (encore) là. */
+	.is-live .poster {
+		opacity: 0;
+		scale: 0.9;
+	}
+
+	.is-live:is([data-station='vertigo'], [data-station='triangle'], [data-station='faille']) .poster {
+		opacity: 1;
+		scale: 1;
+	}
+
+	:global(html[data-gl='ready']) .is-live .poster {
+		display: none;
+	}
+
+	/* Les cubes remplacent le titre une fois alignés dessus. */
+	:global(html[data-gl='ready']) .is-live .hero-name {
+		opacity: 0;
+	}
+
+	/* ---------------- Artinova ---------------- */
+	.artinova {
+		position: relative;
+		z-index: 2;
+		background: var(--artinova);
+		color: #fff;
+	}
+
+	.art {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 1.25rem;
+		row-gap: clamp(2.5rem, 5vw, 4rem);
+		padding-block: var(--section);
+	}
+
+	.art-head {
+		grid-column: 1 / span 7;
+		display: grid;
 		gap: 2rem;
+		align-content: start;
+	}
+
+	.art-kicker {
+		color: rgba(255, 255, 255, 0.78);
+	}
+
+	.art-logo {
+		width: clamp(11rem, 26vw, 20rem);
+		height: auto;
+	}
+
+	.art-title {
+		font-size: clamp(2rem, 4.2vw, 4.2rem);
+		font-weight: 750;
+		font-stretch: 80%;
+		line-height: 1.02;
+		letter-spacing: -0.012em;
+		text-wrap: balance;
+	}
+
+	.art :global(.art-stairs) {
+		grid-column: 8 / span 5;
+		grid-row: 1 / span 2;
+		align-self: center;
+	}
+
+	.art :global(.art-stairs .tag) {
+		background: #fff;
+		color: var(--artinova);
+	}
+
+	.art-body {
+		grid-column: 1 / span 7;
+		display: grid;
+		gap: 1.6rem;
+	}
+
+	.art-lead {
+		max-width: 44ch;
+		font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+		line-height: 1.45;
+	}
+
+	.art-points {
+		display: grid;
+		gap: 0.9rem;
+		max-width: 60ch;
+	}
+
+	.art-points li {
+		padding-left: 1.3rem;
+		border-left: 2px solid rgba(255, 255, 255, 0.5);
+		line-height: 1.5;
+		color: rgba(255, 255, 255, 0.88);
+	}
+
+	.art-points strong {
+		color: #fff;
+		font-weight: 650;
+	}
+
+	.art-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1rem 2rem;
+		font-weight: 600;
+	}
+
+	.art-btn {
+		border-color: #fff;
+		background: #fff;
+		color: var(--artinova);
+	}
+
+	.art-btn:hover,
+	.art-btn:focus-visible {
+		background: transparent;
+		color: #fff;
+	}
+
+	.art-figures {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		border-top: 1px solid rgba(255, 255, 255, 0.35);
+	}
+
+	.art-figures li {
+		display: grid;
+		gap: 0.6rem;
+		padding: 1.4rem 1.2rem 0 0;
+	}
+
+	.art-figures li + li {
+		padding-left: 1.2rem;
+		border-left: 1px solid rgba(255, 255, 255, 0.35);
+	}
+
+	.art-figures .value {
+		font-size: clamp(2rem, 4.2vw, 4rem);
+		font-weight: 800;
+		font-stretch: 75%;
+		line-height: 0.95;
+	}
+
+	.art-figures .what {
+		font-size: var(--t-small);
+		line-height: 1.4;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	.artinova :global(:focus-visible) {
+		outline-color: #fff;
+	}
+
+	@media (max-width: 900px) {
+		.art-head,
+		.art-body,
+		.art :global(.art-stairs) {
+			grid-column: 1 / -1;
+			grid-row: auto;
+		}
+
+		.art-figures {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.art-figures li:nth-child(odd) {
+			padding-left: 0;
+			border-left: 0;
+		}
+	}
+
+	/* ---------------- Autres projets ---------------- */
+	.sel-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1.5rem;
+		padding-bottom: clamp(2rem, 4vw, 3rem);
+	}
+
+	.all {
+		color: var(--fg);
+		white-space: nowrap;
+	}
+
+	/* ---------------- Profil ---------------- */
+	.profile {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 1.25rem;
+		row-gap: 2rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.prof-title {
+		grid-column: 1 / span 5;
+	}
+
+	.prof-body {
+		grid-column: 7 / span 6;
+		display: grid;
+		gap: 1.6rem;
+		justify-items: start;
+	}
+
+	.skills {
+		display: grid;
+		width: 100%;
+		border-top: 1px solid var(--line);
+	}
+
+	.skills div {
+		display: grid;
+		grid-template-columns: 8rem minmax(0, 1fr);
+		gap: 1rem;
+		padding-block: 1rem;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.skills dt {
+		padding-top: 0.2rem;
+		color: var(--fg);
+	}
+
+	.skills dd {
+		color: color-mix(in srgb, var(--fg) 82%, var(--bg));
+		line-height: 1.55;
+	}
+
+	@media (max-width: 520px) {
+		.skills div {
+			grid-template-columns: 1fr;
+			gap: 0.4rem;
+		}
+	}
+
+	@media (max-width: 900px) {
+		.prof-title,
+		.prof-body {
+			grid-column: 1 / -1;
+		}
 	}
 </style>
