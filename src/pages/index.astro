@@ -1,17 +1,5 @@
 ---
-// En production, nginx répond 301 → /fr/ avant même de servir ce fichier.
-// Cette page n'est qu'un filet de sécurité (astro preview, autres hébergeurs).
+import Home from '@components/home/Home.astro';
 ---
 
-<!doctype html>
-<html lang="fr">
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="refresh" content="0;url=/fr/" />
-		<title>Evan Hugues</title>
-		<link rel="canonical" href="https://evanhgs.fr/fr/" />
-	</head>
-	<body>
-		<a href="/fr/">evanhgs.fr → /fr/</a>
-	</body>
-</html>
+<Home />

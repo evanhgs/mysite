@@ -1,33 +1,7 @@
 ---
-import Site from '@layouts/Site.astro';
+import Base from '@layouts/Base.astro';
 ---
 
-<Site locale="fr" title="404 — Evan Hugues" description="Page introuvable.">
-	<section class="wrap nf">
-		<p class="micro">Erreur — 404</p>
-		<h1 class="display">Page<br />introuvable</h1>
-		<p class="links">
-			<a class="u-link" href="/fr/">Retour à l’accueil</a>
-			<a class="u-link" href="/en/">Back home (EN)</a>
-		</p>
-	</section>
-</Site>
-
-<style>
-	.nf {
-		padding-block: clamp(3rem, 8vw, 7rem);
-	}
-
-	.nf h1 {
-		margin-block: 0.4rem 1.6rem;
-	}
-
-	.links {
-		display: flex;
-		gap: 2rem;
-		font-size: 0.85rem;
-		font-weight: 500;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-	}
-</style>
+<Base title="Page introuvable — Evan Hugues" description="Cette page n’existe pas ou plus.">
+	<section class="wrap section"><h1 class="h1">404</h1><p class="lead">Vous tournez en rond.</p><a class="btn" href="/">Retour à l’accueil</a></section>
+</Base>

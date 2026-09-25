@@ -1,120 +1,164 @@
 ---
-import type { Locale, SiteContent } from '@data/content';
-import { routes, t } from '@i18n/ui';
+import { nav, site, socials } from '@data/site';
 
-interface Props {
-	locale: Locale;
-	contact: SiteContent['contact'];
-}
-
-const { locale, contact } = Astro.props;
-const r = routes[locale];
 const year = new Date().getFullYear();
 ---
 
-<footer id="contact" class="site-footer">
-	<div class="wrap cta-block">
-		<p class="micro">{t(locale, 'footer.ctaSub')}</p>
-		<a class="cta display" href={`mailto:${contact.email}`}>
-			{t(locale, 'footer.cta')}
-			<span class="arrow" aria-hidden="true">↗</span>
+<footer class="site-footer">
+	<div class="wrap">
+		<a class="cta" href="/contact/">
+			<span class="label">Un projet sérieux, une opportunité, une question ?</span>
+			<span class="display cta-word">Écrivez-moi<span class="arrow" aria-hidden="true">↗</span></span>
 		</a>
-		<a class="email u-link" href={`mailto:${contact.email}`}>{contact.email}</a>
-	</div>
 
-	<div class="wrap bottom">
-		<nav class="cols" aria-label={locale === 'fr' ? 'Liens de pied de page' : 'Footer links'}>
-			<div>
-				<p class="micro">Menu</p>
+		<div class="cols">
+			<nav aria-label="Pied de page">
+				<p class="label">Plan</p>
 				<ul>
-					<li><a class="u-link" href={r.projects}>{t(locale, 'nav.projects')}</a></li>
-					<li><a class="u-link" href={r.about}>{t(locale, 'nav.about')}</a></li>
-					<li><a class="u-link" href={r.blog}>{t(locale, 'nav.blog')}</a></li>
+					<li><a class="u-link" href="/">Accueil</a></li>
+					{
+						nav.map((item) => (
+							<li>
+								<a class="u-link" href={item.href}>
+									{item.label}
+								</a>
+							</li>
+						))
+					}
+					<li><a class="u-link" href="/mentions-legales/">Mentions légales</a></li>
+				</ul>
+			</nav>
+
+			<div>
+				<p class="label">Ailleurs</p>
+				<ul>
+					{
+						socials.map((s) => (
+							<li>
+								<a class="u-link" href={s.href} rel="noopener">
+									{s.label}
+								</a>
+							</li>
+						))
+					}
 				</ul>
 			</div>
-			<div>
-				<p class="micro">Social</p>
-				<ul>
-					<li><a class="u-link" href={contact.github} rel="noopener">GitHub</a></li>
-					<li><a class="u-link" href={contact.linkedin} rel="noopener">LinkedIn</a></li>
-					<li><a class="u-link" href={contact.htb} rel="noopener">Hack The Box</a></li>
-				</ul>
+
+			<div class="meta">
+				<button class="motion" type="button" data-motion-toggle aria-pressed="true">
+					<span class="label">Animations</span>
+					<span data-motion-state>activées</span>
+				</button>
+				<p class="muted">© {year} {site.name}</p>
+				<p class="muted">Site statique : Astro, Three.js, zéro cookie.</p>
 			</div>
-		</nav>
-		<div class="legal">
-			<p class="micro">© {year} Evan Hugues — {t(locale, 'footer.rights')}</p>
-			<p class="micro">{t(locale, 'footer.madeWith')}</p>
 		</div>
 	</div>
 </footer>
 
 <style>
 	.site-footer {
-		margin-top: var(--section);
-		background: var(--ink);
-		color: var(--paper);
-	}
-
-	.site-footer .micro {
-		color: color-mix(in srgb, var(--paper) 55%, transparent);
-	}
-
-	.cta-block {
-		padding-block: clamp(4rem, 9vw, 8rem) clamp(2.5rem, 5vw, 4rem);
-		border-bottom: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
+		position: relative;
+		z-index: 2;
+		padding-block: var(--section) 2rem;
+		border-top: 1px solid var(--line);
+		background: var(--bg);
 	}
 
 	.cta {
-		display: block;
-		margin-block: 0.5em 0.35em;
+		display: grid;
+		gap: 1.25rem;
+		padding-bottom: clamp(3rem, 7vw, 6rem);
 	}
 
-	.arrow {
-		display: inline-block;
-		transition: transform 0.4s var(--ease);
+	.cta-word {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.08em;
+		transition: color 0.4s var(--ease-out);
+	}
+
+	.cta-word .arrow {
+		font-size: 0.5em;
+		font-weight: 600;
+	}
+
+	.cta:hover .cta-word,
+	.cta:focus-visible .cta-word {
+		color: var(--muted);
 	}
 
 	.cta:hover .arrow,
 	.cta:focus-visible .arrow {
-		transform: translate(0.08em, -0.08em);
-	}
-
-	.email {
-		font-size: var(--body-lg);
-		font-weight: 300;
-	}
-
-	.bottom {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		gap: 2.5rem;
-		padding-block: 2.5rem 2rem;
+		transform: translate(0.12em, -0.12em);
 	}
 
 	.cols {
-		display: flex;
-		gap: clamp(2.5rem, 8vw, 7rem);
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 2.5rem 1.25rem;
+		padding-top: 2.5rem;
+		border-top: 1px solid var(--line);
 	}
 
-	.cols .micro {
-		margin-bottom: 0.9rem;
+	.cols > :nth-child(1) {
+		grid-column: 1 / span 3;
+	}
+
+	.cols > :nth-child(2) {
+		grid-column: 4 / span 3;
+	}
+
+	.meta {
+		grid-column: 9 / span 4;
+		display: grid;
+		gap: 0.4rem;
+		align-content: start;
+		justify-items: end;
+		text-align: right;
+		font-size: var(--t-small);
+	}
+
+	.cols .label {
+		margin-bottom: 1rem;
 	}
 
 	.cols li {
-		margin-bottom: 0.35rem;
-		font-size: 0.95rem;
+		margin-bottom: 0.4rem;
 	}
 
-	.legal {
-		display: flex;
-		flex-direction: column;
-		gap: 0.35rem;
-		justify-content: flex-end;
+	.motion {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.75rem;
+		margin-bottom: 1rem;
+		font-weight: 600;
 	}
 
-	::selection {
-		background: var(--paper);
-		color: var(--ink);
+	.motion .label {
+		margin: 0;
+	}
+
+	.motion[aria-pressed='false'] [data-motion-state] {
+		color: var(--muted);
+	}
+
+	@media (scripting: none) {
+		.motion {
+			display: none;
+		}
+	}
+
+	@media (max-width: 760px) {
+		.cols > :nth-child(1),
+		.cols > :nth-child(2) {
+			grid-column: span 6;
+		}
+
+		.meta {
+			grid-column: 1 / -1;
+			justify-items: start;
+			text-align: left;
+		}
 	}
 </style>

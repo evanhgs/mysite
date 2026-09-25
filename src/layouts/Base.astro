@@ -1,0 +1,44 @@
+---
+import BaseHead, { type Props as HeadProps } from '@components/BaseHead.astro';
+import Footer from '@components/Footer.astro';
+import Header from '@components/Header.astro';
+import JsonLd from '@components/JsonLd.astro';
+import Analytics from '@vercel/analytics/astro';
+import type { Graph } from 'schema-dts';
+
+interface Props extends HeadProps {
+	jsonLd?: Graph;
+	/** Couleur d'accent de la page (projets). */
+	accent?: string;
+	bodyClass?: string;
+	/** Masquer le pied de page (pages plein écran). */
+	bare?: boolean;
+}
+
+const { jsonLd, accent, bodyClass, bare = false, ...head } = Astro.props;
+// Vercel Analytics n'existe que sur Vercel : ailleurs, /_vercel/insights répondrait 404.
+const onVercel = process.env.VERCEL === '1';
+---
+
+<!doctype html>
+<html lang="fr" data-gl="off">
+	<head>
+		<BaseHead {...head}>
+			{jsonLd && <JsonLd data={jsonLd} />}
+			<slot name="head" />
+		</BaseHead>
+	</head>
+	<body class={bodyClass} style={accent ? `--accent: ${accent}` : undefined}>
+		<a class="skip" href="#contenu">Aller au contenu</a>
+		<Header />
+		<main id="contenu">
+			<slot />
+		</main>
+		{!bare && <Footer />}
+		<div class="grain" aria-hidden="true"></div>
+		{onVercel && <Analytics />}
+		<script>
+			import '@client/core/site';
+		</script>
+	</body>
+</html>

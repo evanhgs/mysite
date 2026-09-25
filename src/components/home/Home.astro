@@ -1,0 +1,34 @@
+---
+import Base from '@layouts/Base.astro';
+import { site } from '@data/site';
+import { artinovaNode, graph, personNode, websiteNode } from '@lib/seo';
+
+interface Props {
+	/** Canonical explicite (utilisé par l'ancienne URL /fr/). */
+	canonical?: string;
+}
+
+const { canonical } = Astro.props;
+---
+
+<Base
+	title={`${site.name} — ${site.headline}`}
+	description={site.description}
+	canonical={canonical}
+	type="profile"
+	jsonLd={graph(personNode(), websiteNode(), artinovaNode())}
+>
+	<section class="wrap hero">
+		<h1 class="display">Evan Hugues</h1>
+		<p class="lead">{site.headline}.</p>
+	</section>
+</Base>
+
+<style>
+	.hero {
+		min-height: 100svh;
+		display: grid;
+		align-content: center;
+		gap: 2rem;
+	}
+</style>

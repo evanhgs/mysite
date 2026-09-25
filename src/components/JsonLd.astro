@@ -1,0 +1,12 @@
+---
+import type { Graph } from 'schema-dts';
+
+interface Props {
+	data: Graph;
+}
+
+// `<` échappé : le JSON ne peut pas refermer la balise <script>.
+const json = JSON.stringify(Astro.props.data).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" set:html={json} />
