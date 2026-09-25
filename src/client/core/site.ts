@@ -32,4 +32,4 @@ function motionToggle() {
 
 startClock();
 motionToggle();
-startSmoothScroll();
+void startSmoothScroll();

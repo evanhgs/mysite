@@ -1,18 +1,6 @@
 import sitemap from '@astrojs/sitemap';
-import { defineConfig, envField, fontProviders, memoryCache } from 'astro/config';
+import { defineConfig, envField, fontProviders } from 'astro/config';
 import emailGuard from './integrations/email-guard.mjs';
-
-// Le binding natif du compilateur Rust exige glibc >= 2.35 ; l'image de
-// build Vercel (Amazon Linux 2023) est en glibc 2.34 et ne peut pas le
-// charger. On ne l'active que si le binaire se charge réellement, sinon
-// Astro retombe sur le compilateur WASM standard (sortie identique).
-let rustCompiler = true;
-try {
-	await import('@astrojs/compiler-binding');
-} catch {
-	rustCompiler = false;
-	console.warn('[config] Compilateur Rust indisponible sur cette plateforme, repli sur le compilateur WASM.');
-}
 
 // Adresse révélée sur /contact/ après la preuve de travail. Elle n'est jamais
 // écrite en clair dans le build : email-guard fait échouer la compilation si
@@ -23,6 +11,11 @@ const CONTACT_EMAIL_DEFAULT = 'evanhugues@proton.me';
 export default defineConfig({
 	site: 'https://evanhgs.fr',
 	trailingSlash: 'always',
+	// Astro 7 passe par défaut à 'jsx' (espaces supprimés entre éléments en
+	// ligne, comme React). Mesuré sur ce site : 1,3 Ko gzip gagnés sur les 16
+	// pages, mais des espaces visibles perdus (« source ↗ », « : github.com »).
+	// On garde la compression respectueuse du HTML.
+	compressHTML: true,
 	integrations: [
 		sitemap({
 			// /fr/ n'existe que pour les anciens liens (canonical vers /).
@@ -62,15 +55,6 @@ export default defineConfig({
 			},
 		},
 	],
-	experimental: {
-		rustCompiler,
-		queuedRendering: {
-			enabled: true,
-		},
-		cache: {
-			provider: memoryCache(),
-		},
-	},
 	env: {
 		schema: {
 			CONTACT_EMAIL: envField.string({
