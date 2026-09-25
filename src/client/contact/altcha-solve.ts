@@ -8,9 +8,13 @@ interface Payload {
 	cipher: { iv: string; data: string };
 }
 
-const hex = (s: string) => Uint8Array.from(s.match(/../g) ?? [], (b) => parseInt(b, 16));
+function hex(s: string): Uint8Array<ArrayBuffer> {
+	const out = new Uint8Array(s.length >> 1);
+	for (let i = 0; i < out.length; i++) out[i] = parseInt(s.slice(i * 2, i * 2 + 2), 16);
+	return out;
+}
 
-async function derive(nonce: Uint8Array, counter: number, salt: Uint8Array, cost: number, bytes: number) {
+async function derive(nonce: Uint8Array, counter: number, salt: Uint8Array<ArrayBuffer>, cost: number, bytes: number) {
 	const password = new Uint8Array(nonce.length + 4);
 	password.set(nonce);
 	new DataView(password.buffer).setUint32(nonce.length, counter, false);

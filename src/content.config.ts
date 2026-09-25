@@ -70,8 +70,8 @@ const projets = defineCollection({
 			status: z.string().optional(),
 			stack: z.array(z.string()).min(1),
 			languages: z.array(z.string()).default([]),
-			links: z.array(z.object({ label: z.string(), href: z.string().url() })).default([]),
-			repo: z.string().url().optional(),
+			links: z.array(z.object({ label: z.string(), href: z.url() })).default([]),
+			repo: z.url().optional(),
 			accent: z.string().regex(/^#[0-9a-f]{6}$/i),
 			cover: z.object({
 				motif: z.enum(['lattice', 'moire', 'bulge', 'sheets', 'shelves', 'speed', 'dots', 'broken', 'orbit']),
