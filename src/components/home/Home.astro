@@ -48,7 +48,10 @@ const others = projects.filter((p) => p.id !== 'artinova');
 			</ul>
 
 			<div class="scene-foot wrap">
-				<p class="label hint">Bougez la souris, puis faites défiler</p>
+				<p class="label hint">
+					<span class="hint-fine">Bougez la souris, puis faites défiler</span>
+					<span class="hint-touch">Glissez sur le nom, puis faites défiler</span>
+				</p>
 				<a class="label skip-scene u-link" href="#artinova">Passer l’illusion</a>
 			</div>
 		</div>
@@ -155,6 +158,7 @@ const others = projects.filter((p) => p.id !== 'artinova');
 		height: 100svh;
 		min-height: 34rem;
 		overflow: clip;
+		touch-action: pan-y;
 	}
 
 	.gl {
@@ -267,6 +271,20 @@ const others = projects.filter((p) => p.id !== 'artinova');
 		opacity: 0;
 	}
 
+	.hint-touch {
+		display: none;
+	}
+
+	@media (pointer: coarse) {
+		.hint-fine {
+			display: none;
+		}
+
+		.hint-touch {
+			display: inline;
+		}
+	}
+
 	.is-live:not([data-station='nom']) .hero {
 		opacity: 0;
 		translate: 0 -3vh;
@@ -288,7 +306,7 @@ const others = projects.filter((p) => p.id !== 'artinova');
 	}
 
 	/* Les cubes remplacent le titre une fois alignés dessus. */
-	:global(html[data-gl='ready']) .is-live .hero-name {
+	.is-live.is-formed .hero-name {
 		opacity: 0;
 	}
 
