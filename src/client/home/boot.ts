@@ -6,11 +6,11 @@ import { webgl2Available } from '../gl/support';
 
 export const STATIONS: Station[] = [
 	{ name: 'nom', from: 0 },
-	{ name: 'revelation', from: 0.16 },
-	{ name: 'vertigo', from: 0.38 },
-	{ name: 'triangle', from: 0.58 },
+	{ name: 'revelation', from: 0.12 },
+	{ name: 'vertigo', from: 0.3 },
+	{ name: 'triangle', from: 0.57 },
 	{ name: 'faille', from: 0.76 },
-	{ name: 'sortie', from: 0.94 },
+	{ name: 'sortie', from: 0.87 },
 ];
 
 const whenIdle = (fn: () => void) =>

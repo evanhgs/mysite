@@ -47,6 +47,11 @@ const others = projects.filter((p) => p.id !== 'artinova');
 				<li data-at="faille">Il suffisait de tourner autour.</li>
 			</ul>
 
+			<div class="scroll-cue" aria-hidden="true">
+				<span class="label">Défiler</span>
+				<span class="cue-line"></span>
+			</div>
+
 			<div class="scene-foot wrap">
 				<p class="label hint">
 					<span class="hint-fine">Bougez la souris, puis faites défiler</span>
@@ -143,13 +148,14 @@ const others = projects.filter((p) => p.id !== 'artinova');
 		position: relative;
 	}
 
+	/* Une scène longue : on prend le temps de voir les cubes se réorganiser. */
 	.scene.is-live {
-		height: 400svh;
+		height: 650svh;
 	}
 
 	@media (max-width: 700px) {
 		.scene.is-live {
-			height: 300svh;
+			height: 480svh;
 		}
 	}
 
@@ -270,6 +276,59 @@ const others = projects.filter((p) => p.id !== 'artinova');
 
 	.is-live:not([data-station='nom']) .hint {
 		opacity: 0;
+	}
+
+	/* Indicateur de défilement, en bas au centre, tant qu'on n'a pas bougé. */
+	.scroll-cue {
+		position: absolute;
+		left: 50%;
+		bottom: 1.3rem;
+		translate: -50% 0;
+		display: grid;
+		justify-items: center;
+		gap: 0.75rem;
+		pointer-events: none;
+		transition: opacity 0.5s var(--ease-out);
+	}
+
+	.scroll-cue .label {
+		color: var(--fg);
+	}
+
+	.cue-line {
+		position: relative;
+		width: 1px;
+		height: 3.4rem;
+		overflow: hidden;
+		background: var(--line-strong);
+	}
+
+	.cue-line::after {
+		content: '';
+		position: absolute;
+		inset: 0 0 auto;
+		height: 45%;
+		background: var(--fg);
+		animation: cue 1.9s var(--ease-in-out) infinite;
+	}
+
+	@keyframes cue {
+		from {
+			translate: 0 -100%;
+		}
+		to {
+			translate: 0 230%;
+		}
+	}
+
+	.is-live:not([data-station='nom']) .scroll-cue {
+		opacity: 0;
+	}
+
+	@media (max-width: 700px) {
+		.scroll-cue {
+			bottom: 4.2rem;
+		}
 	}
 
 	.hint-touch {

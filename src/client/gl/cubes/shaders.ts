@@ -14,6 +14,9 @@ uniform int uTo;
 uniform float uT;
 uniform float uStagger;
 uniform float uSwirl;
+uniform float uWave;
+uniform float uIdScale;
+uniform float uFall;
 uniform float uOrtho;
 uniform mat4 uOrthoProj;
 uniform float uTime;
@@ -41,9 +44,12 @@ void main() {
 	vec4 a = formation(uFrom, id);
 	vec4 b = formation(uTo, id);
 
-	// Chaque cube part avec un léger décalage (aSeed) : le morphing « coule ».
-	float k = clamp((uT - aSeed * uStagger) / max(1e-4, 1.0 - uStagger), 0.0, 1.0);
-	k = k * k * (3.0 - 2.0 * k);
+	// Chaque cube part avec un léger décalage : au hasard (aSeed), le morphing
+	// « coule » ; dans l'ordre du chemin (aId), il se propage comme une vague.
+	float order = mix(aSeed, aId * uIdScale * 0.85 + aSeed * 0.15, uWave);
+	float k = clamp((uT - order * uStagger) / max(1e-4, 1.0 - uStagger), 0.0, 1.0);
+	// Chute : le cube accélère (k²) ; sinon il part et arrive en douceur.
+	k = mix(k * k * (3.0 - 2.0 * k), k * k, uFall);
 
 	vec3 p = mix(a.xyz, b.xyz, k);
 	vec3 swirl = normalize(vec3(sin(aSeed * 91.7), cos(aSeed * 47.3), sin(aSeed * 13.1 + 1.7)) + 1e-4);
@@ -67,6 +73,16 @@ void main() {
 	// Éclairage directionnel, quantifié en trois tons dans le fragment.
 	vShade = dot(n, normalize(mix(uLightFrom, uLightTo, k)));
 	vec4 mv = viewMatrix * vec4(p + local, 1.0);
+
+	// La division perspective est faite ici, avant le découpage du GPU : un
+	// cube trop proche de la caméra, ou derrière elle, deviendrait un polygone
+	// retourné couvrant tout l'écran. On ne le dessine simplement pas.
+	float depth = -(viewMatrix * vec4(p, 1.0)).z;
+	if (uOrtho < 0.999 && depth < 2.0 * s + 0.5) {
+		gl_Position = vec4(0.0, 0.0, 2.0, 1.0);
+		vFog = 0.0;
+		return;
+	}
 
 	// Perspective → orthographique, mélangés en coordonnées normalisées :
 	// continu, exact à uOrtho = 1, et c'est précisément l'effet « vertigo ».

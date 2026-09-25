@@ -1,6 +1,6 @@
 // Scène WebGL de l'accueil : le nom anamorphique, la révélation, le vertigo,
 // le triangle impossible et sa faille, pilotés par le défilement.
-import { Matrix4, PerspectiveCamera, Scene } from 'three';
+import { Matrix4, PerspectiveCamera, Scene, Vector3 } from 'three';
 import { ISO_VIEW, REUTERSVARD_ROLL } from '@lib/geometry/reutersvard';
 import { prefs } from '../core/prefs';
 import type { SceneTracker } from '../core/scroll-progress';
@@ -8,7 +8,7 @@ import { damp } from '../core/ticker';
 import { CubeField } from '../gl/cubes/field';
 import {
 	type CameraSpec,
-	exitFormation,
+	collapseFormation,
 	nameFormation,
 	scatterFormation,
 	triangleFormation,
@@ -43,16 +43,17 @@ interface Pose {
 	fog: number;
 }
 
-// Poses de caméra le long du défilement (interpolées en douceur).
+// Poses de caméra le long du défilement (interpolées en douceur). Le
+// morphing du nom vers le triangle a la plus grande part du défilement.
 const KEYS: Pose[] = [
 	{ p: 0.0, zoom: 1, az: 0, el: 0, roll: 0, ortho: 0, flat: 1, fog: 0 },
-	{ p: 0.1, zoom: 1, az: 0, el: 0, roll: 0, ortho: 0, flat: 1, fog: 0 },
-	{ p: 0.28, zoom: 1.05, az: 1.15, el: 0.34, roll: 0, ortho: 0, flat: 0, fog: 0.35 },
-	{ p: 0.38, zoom: 1.05, az: 1.3, el: 0.4, roll: 0, ortho: 0, flat: 0, fog: 0.35 },
-	{ p: 0.56, zoom: 1, az: ISO_AZ, el: ISO_EL, roll: REUTERSVARD_ROLL, ortho: 1, flat: 0, fog: 0 },
-	{ p: 0.77, zoom: 1, az: ISO_AZ, el: ISO_EL, roll: REUTERSVARD_ROLL, ortho: 1, flat: 0, fog: 0 },
-	{ p: 0.93, zoom: 1.45, az: ISO_AZ + 0.62, el: ISO_EL - 0.1, roll: REUTERSVARD_ROLL, ortho: 0.6, flat: 0, fog: 0.1 },
-	{ p: 1.0, zoom: 1.7, az: ISO_AZ + 0.9, el: ISO_EL - 0.06, roll: REUTERSVARD_ROLL, ortho: 0.4, flat: 0, fog: 0.35 },
+	{ p: 0.07, zoom: 1, az: 0, el: 0, roll: 0, ortho: 0, flat: 1, fog: 0 },
+	{ p: 0.2, zoom: 1.05, az: 1.15, el: 0.34, roll: 0, ortho: 0, flat: 0, fog: 0.35 },
+	{ p: 0.3, zoom: 1.05, az: 1.3, el: 0.4, roll: 0, ortho: 0, flat: 0, fog: 0.35 },
+	{ p: 0.58, zoom: 1, az: ISO_AZ, el: ISO_EL, roll: REUTERSVARD_ROLL, ortho: 1, flat: 0, fog: 0 },
+	{ p: 0.74, zoom: 1, az: ISO_AZ, el: ISO_EL, roll: REUTERSVARD_ROLL, ortho: 1, flat: 0, fog: 0 },
+	{ p: 0.86, zoom: 1.3, az: ISO_AZ + 0.62, el: ISO_EL - 0.1, roll: REUTERSVARD_ROLL, ortho: 0.75, flat: 0, fog: 0.1 },
+	{ p: 1.0, zoom: 1.4, az: ISO_AZ + 0.8, el: ISO_EL - 0.05, roll: REUTERSVARD_ROLL, ortho: 0.8, flat: 0, fog: 0.85 },
 ];
 
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -78,10 +79,11 @@ function poseAt(p: number): Pose {
 }
 
 function morphAt(p: number): { from: number; to: number; t: number } {
-	if (p < 0.38) return { from: ROW.name, to: ROW.name, t: 0 };
-	if (p < 0.56) return { from: ROW.name, to: ROW.triangle, t: (p - 0.38) / 0.16 };
-	if (p < 0.94) return { from: ROW.triangle, to: ROW.triangle, t: 0 };
-	return { from: ROW.triangle, to: ROW.exit, t: (p - 0.94) / 0.06 };
+	if (p < 0.3) return { from: ROW.name, to: ROW.name, t: 0 };
+	if (p < 0.56) return { from: ROW.name, to: ROW.triangle, t: (p - 0.3) / 0.26 };
+	if (p < 0.87) return { from: ROW.triangle, to: ROW.triangle, t: 0 };
+	// Sortie : le triangle s'effondre, en vague le long du chemin.
+	return { from: ROW.triangle, to: ROW.exit, t: (p - 0.87) / 0.12 };
 }
 
 export async function startScene(sceneEl: HTMLElement, tracker: SceneTracker) {
@@ -118,6 +120,18 @@ export async function startScene(sceneEl: HTMLElement, tracker: SceneTracker) {
 	// --- Formations (dépendent de la mise en page) ---
 	let triangle: Float32Array = new Float32Array(0);
 	let built = false;
+	// Centre réel du triangle : la caméra le vise dès le morphing, pour que
+	// le triangle reste cadré quand elle tourne autour (la faille).
+	const center = new Vector3();
+	const target = new Vector3();
+	const orbit = (pose: Pose, dist: number, look: Vector3, out: PerspectiveCamera) => {
+		out.position.set(Math.sin(pose.az) * Math.cos(pose.el), Math.sin(pose.el), Math.cos(pose.az) * Math.cos(pose.el));
+		out.position.multiplyScalar(dist).add(look);
+		out.up.set(0, 1, 0);
+		out.lookAt(look);
+		out.rotateZ(pose.roll);
+		out.updateMatrixWorld();
+	};
 	const build = async () => {
 		const rect = canvas.getBoundingClientRect();
 		const spec: CameraSpec = { fov: FOV, aspect: rect.width / rect.height, dist: DIST, width: rect.width, height: rect.height };
@@ -125,10 +139,19 @@ export async function startScene(sceneEl: HTMLElement, tracker: SceneTracker) {
 		if (!sample) throw new Error('Échantillonnage du titre impossible');
 		const name = nameFormation(sample, spec, count);
 		triangle = triangleFormation(N, k, spec);
+		center.set(0, 0, 0);
+		for (let i = 0; i < count; i++) center.add(new Vector3(triangle[i * 4], triangle[i * 4 + 1], triangle[i * 4 + 2]));
+		center.divideScalar(count);
+		// La chute suit le bas de l'écran dans la pose finale (la caméra est
+		// tournée de 90° autour de son axe : le « bas » du monde n'est pas celui de l'écran).
+		const last = KEYS[KEYS.length - 1];
+		const probe = new PerspectiveCamera();
+		orbit(last, DIST * last.zoom, center, probe);
+		const down = new Vector3(0, -1, 0).applyQuaternion(probe.quaternion).multiplyScalar(DIST * 1.15);
 		if (!built) field.setFormation(ROW.scatter, scatterFormation(count, DIST * 1.6, name[3] || 0.4));
 		field.setFormation(ROW.name, name);
 		field.setFormation(ROW.triangle, triangle);
-		field.setFormation(ROW.exit, exitFormation(triangle, count));
+		field.setFormation(ROW.exit, collapseFormation(triangle, count, [down.x, down.y, down.z]));
 		built = true;
 	};
 	await build();
@@ -219,7 +242,13 @@ export async function startScene(sceneEl: HTMLElement, tracker: SceneTracker) {
 			from = m.from;
 			to = m.to;
 			t = m.t;
-			u.uSwirl.value = to !== from ? 3 * Math.sin(Math.PI * clamp01(t)) : 0;
+			const collapse = to === ROW.exit;
+			// Nom → triangle : les cubes tourbillonnent et arrivent en décalé.
+			// Effondrement : ils tombent un à un, dans l'ordre du chemin.
+			u.uSwirl.value = to !== from && !collapse ? 3 * Math.sin(Math.PI * clamp01(t)) : 0;
+			u.uStagger.value = collapse ? 0.72 : 0.5;
+			u.uWave.value = collapse ? 1 : 0;
+			u.uFall.value = collapse ? 1 : 0;
 		}
 		u.uFrom.value = from;
 		u.uTo.value = to;
@@ -231,28 +260,27 @@ export async function startScene(sceneEl: HTMLElement, tracker: SceneTracker) {
 
 		// Influence du pointeur : forte sur le nom, nulle sur le triangle exact.
 		const idle = time - lastMove > 2.5;
-		// Tactile : de temps en temps, le nom se casse puis se recompose tout seul.
-		const sway = coarse && idle ? Math.pow(Math.sin(time * 0.42), 9) * 0.2 : 0;
-		const weight = p < 0.2 ? 1 : p > 0.78 && p < 0.95 ? 0.35 : 0;
+		// Tactile : de temps en temps, le nom se casse puis se recompose tout
+		// seul. Jamais dans les secondes qui suivent l'intro : on laisse d'abord lire.
+		const since = introStart < 0 ? 0 : time - introStart - INTRO - 4;
+		const sway = coarse && idle && since > 0 ? Math.pow(Math.sin(since * 0.42), 9) * 0.2 : 0;
+		const weight = p < 0.12 ? 1 : p > 0.76 && p < 0.88 ? 0.35 : 0;
 		const tAz = (idle ? sway : ptrX * 0.5) * weight;
 		const tEl = (idle ? 0 : -ptrY * 0.24) * weight;
 		offAz = damp(offAz, tAz, 4, dt);
 		offEl = damp(offEl, tEl, 4, dt);
 
-		const az = pose.az + offAz + introAz;
-		const el = pose.el + offEl;
 		const dist = DIST * pose.zoom;
-		camera.position.set(Math.sin(az) * Math.cos(el) * dist, Math.sin(el) * dist, Math.cos(az) * Math.cos(el) * dist);
-		camera.up.set(0, 1, 0);
-		camera.lookAt(0, 0, 0);
-		camera.rotateZ(pose.roll);
-		camera.updateMatrixWorld();
+		// Le nom se lit depuis l'axe exact (cible à l'origine) ; ensuite la
+		// caméra glisse vers le centre du triangle.
+		target.copy(center).multiplyScalar(smooth(clamp01((p - 0.3) / 0.26)));
+		orbit({ ...pose, az: pose.az + offAz + introAz, el: pose.el + offEl }, dist, target, camera);
 
 		// Aplat quand on est pile au bon point de vue : le nom se lit net.
 		const deviation = Math.hypot(offAz + introAz, offEl);
 		const flat = pose.flat * (1 - smooth(clamp01((deviation - 0.02) / 0.2)));
 		u.uFlatAmt.value = flat;
-		u.uFogAmt.value = Math.max(pose.fog, (1 - flat) * (p < 0.2 ? 0.3 : 0));
+		u.uFogAmt.value = Math.max(pose.fog, (1 - flat) * (p < 0.12 ? 0.3 : 0));
 
 		// Même focale au plan de la cible : l'orthographique « aplatit » sans zoomer.
 		const halfH = dist * tanH;

@@ -123,20 +123,21 @@ export function scatterFormation(count: number, radius: number, size: number, se
 	return out;
 }
 
-/** Sortie : la formation s'étire et se disperse vers l'extérieur. */
-export function exitFormation(from: Float32Array, count: number, seed = 9): Float32Array {
+/**
+ * Sortie : la formation s'effondre. Chaque cube tombe le long de `fall`
+ * (le bas de l'écran, exprimé dans le monde) avec une légère dérive, sans
+ * jamais venir vers la caméra ; la vague de départ est réglée dans le
+ * shader (uWave), dans l'ordre du chemin.
+ */
+export function collapseFormation(from: Float32Array, count: number, fall: Vec3, seed = 9): Float32Array {
 	const out = new Float32Array(count * 4);
 	const rand = mulberry32(seed);
 	for (let i = 0; i < count; i++) {
-		const x = from[i * 4];
-		const y = from[i * 4 + 1];
-		const z = from[i * 4 + 2];
-		const d = Math.hypot(x, y, z) || 1;
-		const push = 18 + rand() * 40;
-		out[i * 4] = x * 1.4 + (x / d) * push + (rand() - 0.5) * 12;
-		out[i * 4 + 1] = y * 1.4 + (y / d) * push + 10 + rand() * 25;
-		out[i * 4 + 2] = z * 1.4 + (z / d) * push + (rand() - 0.5) * 12;
-		out[i * 4 + 3] = from[i * 4 + 3] * 0.35;
+		const f = 0.9 + rand() * 0.6;
+		out[i * 4] = from[i * 4] + fall[0] * f + (rand() - 0.5) * 2.4;
+		out[i * 4 + 1] = from[i * 4 + 1] + fall[1] * f + (rand() - 0.5) * 2.4;
+		out[i * 4 + 2] = from[i * 4 + 2] + fall[2] * f + (rand() - 0.5) * 2.4;
+		out[i * 4 + 3] = from[i * 4 + 3] * 0.8;
 	}
 	return out;
 }
