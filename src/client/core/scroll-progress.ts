@@ -34,7 +34,9 @@ export function trackScene(el: HTMLElement, stations: Station[]): SceneTracker {
 	const listeners: ((p: number, dt: number) => void)[] = [];
 
 	const apply = (dt: number) => {
-		smooth = dt > 0 ? damp(smooth, raw(), 9, dt) : raw();
+		// Inertie volontaire : même après un coup de molette rapide, la scène
+		// déroule ses animations en douceur au lieu de sauter d'une étape.
+		smooth = dt > 0 ? damp(smooth, raw(), 3.2, dt) : raw();
 		el.style.setProperty('--p', smooth.toFixed(4));
 		const current = stations.reduce((acc, s) => (smooth >= s.from ? s.name : acc), stations[0].name);
 		if (current !== station) {
