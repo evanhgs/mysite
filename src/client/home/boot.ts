@@ -2,6 +2,7 @@
 // puis charge la scène WebGL après le premier affichage, sans bloquer le LCP.
 import { prefs } from '../core/prefs';
 import { trackScene, type SceneTracker, type Station } from '../core/scroll-progress';
+import { webgl2Available } from '../gl/support';
 
 export const STATIONS: Station[] = [
 	{ name: 'nom', from: 0 },
@@ -11,17 +12,6 @@ export const STATIONS: Station[] = [
 	{ name: 'faille', from: 0.76 },
 	{ name: 'sortie', from: 0.94 },
 ];
-
-function webgl2Available(): boolean {
-	try {
-		const canvas = document.createElement('canvas');
-		const gl = canvas.getContext('webgl2');
-		gl?.getExtension('WEBGL_lose_context')?.loseContext();
-		return Boolean(gl);
-	} catch {
-		return false;
-	}
-}
 
 const whenIdle = (fn: () => void) =>
 	requestAnimationFrame(() =>

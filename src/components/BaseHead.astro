@@ -12,6 +12,8 @@ export interface Props {
 	image?: string;
 	imageAlt?: string;
 	type?: 'website' | 'profile' | 'article';
+	/** Page hors index (404) : ni canonical ni indexation. */
+	noindex?: boolean;
 }
 
 const {
@@ -21,6 +23,7 @@ const {
 	image = '/og/accueil.png',
 	imageAlt = `${site.name} — ${site.headline}`,
 	type = 'website',
+	noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
@@ -31,8 +34,8 @@ const ogImage = new URL(image, Astro.site);
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>{title}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonicalURL} />
-<meta name="robots" content="index, follow, max-image-preview:large" />
+{noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonicalURL} />}
+{!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
 <meta name="author" content={site.name} />
 <meta name="generator" content={Astro.generator} />
 

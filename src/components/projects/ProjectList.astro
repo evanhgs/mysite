@@ -28,6 +28,9 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 								class="row"
 								href={projectUrl(p)}
 								data-cover={`/covers/${p.id}.svg`}
+								data-slug={p.id}
+								data-accent={p.data.accent}
+								data-meta={`${p.data.year} · ${p.data.context.split(',')[0]}`}
 								data-astro-prefetch
 								style={`--row-accent: ${p.data.accent}`}
 							>

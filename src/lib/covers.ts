@@ -273,5 +273,5 @@ export interface CoverOptions {
 export function coverSvg({ motif, accent, seed = 1, title }: CoverOptions): string {
 	const body = MOTIFS[motif]({ accent, rand: mulberry32(seed * 9973 + motif.length) });
 	const label = title ? `<title>${title}</title>` : '';
-	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img">${label}<rect width="${W}" height="${H}" fill="${BG}"/>${body}</svg>`;
+	return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice" role="img">${label}<rect width="${W}" height="${H}" fill="${BG}"/>${body}</svg>`;
 }

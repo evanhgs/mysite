@@ -93,9 +93,10 @@ export function penroseStairsSvg(tones: Tones = MONO, title = 'Escalier de Penro
 	// comme un bâtiment, et la boucle comme une montée sans fin.
 	const base = -2;
 	const blocks: Block[] = steps.map((s) => ({ min: [s.x, base, s.z], size: [1, s.top - base, 1] }));
-	// Le premier pas passe devant les derniers : c'est la marche « suivante ».
-	const fix = { front: [0], back: steps.length - 1 };
-	const { viewBox, inner } = renderBlocks(blocks, P.project, P.depth, P.view, tones, fix, 0.6);
+	// Pas de retouche à la jonction : vue le long de D, la profondeur réelle
+	// donne déjà le bon recouvrement (la dernière marche passe devant la
+	// première, comme devant la « suivante »). Même rendu que la version WebGL.
+	const { viewBox, inner } = renderBlocks(blocks, P.project, P.depth, P.view, tones, undefined, 0.6);
 	const [vx, vy, vw, vh] = viewBox.split(' ').map(Number);
 	const anchors = [0, 1, 2, 3].map((flight) => {
 		const inFlight = steps.map((s, i) => ({ s, i })).filter(({ s }) => s.flight === flight);

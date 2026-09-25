@@ -116,7 +116,7 @@ export async function startScene(sceneEl: HTMLElement, tracker: SceneTracker) {
 	u.uEye.value = [0, 0, DIST];
 
 	// --- Formations (dépendent de la mise en page) ---
-	let triangle = new Float32Array(0);
+	let triangle: Float32Array = new Float32Array(0);
 	let built = false;
 	const build = async () => {
 		const rect = canvas.getBoundingClientRect();

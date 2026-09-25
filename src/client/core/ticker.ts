@@ -8,7 +8,9 @@ let last = 0;
 let running = false;
 
 function frame(now: number) {
-	const dt = Math.min((now - last) / 1000, 0.05);
+	// L'horodatage de rAF peut précéder le performance.now() pris au démarrage :
+	// sans ce plancher, la première image aurait un dt négatif.
+	const dt = Math.min(Math.max((now - last) / 1000, 0), 0.05);
 	last = now;
 	for (const fn of subs) fn(now / 1000, dt);
 	raf = requestAnimationFrame(frame);

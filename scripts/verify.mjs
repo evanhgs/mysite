@@ -123,6 +123,57 @@ try {
 		await context.close();
 	}
 
+	// ------------------------------------------------------------ grille des projets
+	console.log('\n# Projets : liste et grille');
+	{
+		const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+		const page = await context.newPage();
+		await page.goto(`${BASE}/projets/`, { waitUntil: 'networkidle' });
+		const vue = () => page.evaluate(() => document.documentElement.dataset.vue);
+		await page.waitForSelector('[data-grid][data-ready]', { timeout: 30_000 }).catch(() => undefined);
+		if ((await vue()) !== 'grille' || !(await page.$('[data-grid][data-ready]'))) fail('grille : pas active par défaut sur desktop');
+		else pass('grille WebGL active par défaut sur desktop');
+
+		// Survol : la sélection analytique trouve une carte au centre de l'écran.
+		const top = await page.evaluate(() => document.querySelector('[data-grid]').getBoundingClientRect().top + scrollY);
+		await page.evaluate((y) => scrollTo(0, y), top);
+		await page.mouse.move(720, 450);
+		await page.waitForFunction(() => document.querySelector('[data-grid-caption] strong'), null, { timeout: 10_000 }).catch(() => undefined);
+		const hovered = await page.evaluate(() => document.querySelector('[data-grid-caption] strong')?.textContent ?? '');
+		if (hovered) pass(`grille : carte survolée « ${hovered} »`);
+		else fail('grille : aucune carte détectée sous le pointeur');
+
+		// Liste : choix mémorisé après rechargement ; la liste reste accessible.
+		await page.evaluate(() => scrollTo(0, 0));
+		await page.click('button[data-view="liste"]');
+		await page.waitForFunction(() => document.documentElement.dataset.vue === 'liste', null, { timeout: 10_000 }).catch(() => undefined);
+		await page.reload({ waitUntil: 'networkidle' });
+		if ((await vue()) !== 'liste') fail('liste : choix non mémorisé');
+		else pass('liste : choix mémorisé après rechargement');
+		await page.click('button[data-view="grille"]');
+		await page.waitForFunction(() => document.documentElement.dataset.vue === 'grille', null, { timeout: 10_000 }).catch(() => undefined);
+		await page.focus('button[data-view="liste"]');
+		await page.keyboard.press('Tab');
+		const overlay = await page.evaluate(() => ({
+			inList: Boolean(document.activeElement?.closest('[data-list]')),
+			position: getComputedStyle(document.querySelector('[data-list]')).position,
+		}));
+		if (!overlay.inList || overlay.position !== 'fixed') fail(`grille : liste non atteignable au clavier (${JSON.stringify(overlay)})`);
+		else pass('grille : la liste s’ouvre en surimpression au clavier');
+		await context.close();
+
+		const reduced = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+		const rp = await reduced.newPage();
+		await rp.goto(`${BASE}/projets/`, { waitUntil: 'networkidle' });
+		const state = await rp.evaluate(() => ({
+			vue: document.documentElement.dataset.vue,
+			switcher: document.querySelector('[data-views]').hidden,
+		}));
+		if (state.vue !== 'liste' || !state.switcher) fail(`mouvement réduit : ${JSON.stringify(state)}`);
+		else pass('mouvement réduit : liste seule, sans sélecteur');
+		await reduced.close();
+	}
+
 	// ------------------------------------------------------------ pages
 	const viewports = [
 		{ name: 'desktop', viewport: { width: 1440, height: 900 } },
@@ -157,6 +208,10 @@ try {
 			await page.waitForTimeout(300);
 			const csp = await page.evaluate(() => window.__csp);
 			csp.forEach((v) => errors.push(`CSP: ${v}`));
+			if (expect404) {
+				const stairs = await page.waitForSelector('[data-stairs][data-ready]', { timeout: 20_000 }).catch(() => null);
+				if (!stairs) errors.push('escalier WebGL non démarré');
+			}
 
 			if (vp.name === 'desktop' && path !== '/page-inexistante/') {
 				const seo = await page.evaluate(() => ({
