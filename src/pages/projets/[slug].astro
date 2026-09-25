@@ -6,6 +6,7 @@ import Gallery from '@components/project/Gallery.astro';
 import KeyFigures from '@components/project/KeyFigures.astro';
 import NextProject from '@components/project/NextProject.astro';
 import ProjectMeta from '@components/project/ProjectMeta.astro';
+import SlicedTitle from '@components/project/SlicedTitle.astro';
 import { getProjects, nextProject, transitionName, type Projet } from '@lib/projects';
 import { splitSections } from '@lib/sections';
 import { breadcrumbNode, graph, projectNode } from '@lib/seo';
@@ -56,7 +57,7 @@ const title = `${data.title} — ${data.tagline.replace(/\.$/, '')}`;
 				<a class="u-link" href="/projets/">Projets</a>
 			</nav>
 			<p class="kicker label">{data.context} · {data.period ?? data.year}</p>
-			<h1 class="p-title" style={`view-transition-name: ${transitionName(project)}`}>{data.title}</h1>
+			<SlicedTitle text={data.title} class="p-title" style={`view-transition-name: ${transitionName(project)}`} />
 			<p class="lead tagline">{data.tagline}</p>
 		</header>
 
@@ -92,6 +93,10 @@ const title = `${data.title} — ${data.tagline.replace(/\.$/, '')}`;
 	</article>
 </Base>
 
+<script>
+	import '@client/project/sliced-title';
+</script>
+
 <style>
 	.head {
 		display: grid;
@@ -109,7 +114,7 @@ const title = `${data.title} — ${data.tagline.replace(/\.$/, '')}`;
 		color: var(--accent);
 	}
 
-	.p-title {
+	.head :global(.p-title) {
 		font-size: clamp(3.6rem, 16vw, 17rem);
 		font-weight: 800;
 		font-stretch: 75%;

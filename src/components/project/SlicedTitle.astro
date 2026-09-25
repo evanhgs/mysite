@@ -1,0 +1,67 @@
+---
+// Titre « tranché » : le titre est découpé en bandes horizontales posées à
+// des profondeurs différentes, chacune mise à l'échelle pour compenser sa
+// profondeur. Depuis l'axe, elles se recollent exactement ; dès que le point
+// de vue bouge (pointeur, défilement), le titre se désaligne.
+// Seule la première bande porte le texte dans le DOM : les autres le
+// dessinent en CSS (content: attr()), ni lues ni indexées.
+interface Props {
+	text: string;
+	bands?: number;
+	class?: string;
+	style?: string;
+}
+
+const { text, bands = 5, class: className, style } = Astro.props;
+const PERSPECTIVE = 1100;
+const depth = (i: number) => (i - (bands - 1) / 2) * 70;
+---
+
+<h1 class:list={['sliced', className]} style={`--n: ${bands}; ${style ?? ''}`} data-sliced>
+	{
+		Array.from({ length: bands }, (_, i) => (
+			<span
+				class="band"
+				aria-hidden={i > 0 ? 'true' : undefined}
+				data-text={i > 0 ? text : undefined}
+				style={`--i: ${i}; --z: ${depth(i)}px; --s: ${((PERSPECTIVE - depth(i)) / PERSPECTIVE).toFixed(4)}`}
+			>{i === 0 ? text : null}</span>
+		))
+	}
+</h1>
+
+<style>
+	.sliced {
+		display: grid;
+		/* Même valeur que PERSPECTIVE : l'échelle de chaque bande en dépend. */
+		perspective: 1100px;
+		perspective-origin: calc(50% + var(--ox, 0px)) calc(50% + var(--oy, 0px));
+	}
+
+	.band {
+		grid-area: 1 / 1;
+		display: block;
+	}
+
+	.band[data-text] {
+		display: none;
+	}
+
+	.band[data-text]::before {
+		content: attr(data-text);
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		:global(html:not([data-motion='off'])) .band {
+			/* Chaque bande déborde d'un pixel sur ses voisines : pas de joint visible. */
+			clip-path: inset(
+				calc(var(--i) / var(--n) * 100% - 1px) -2% calc((var(--n) - 1 - var(--i)) / var(--n) * 100% - 1px) -2%
+			);
+			transform: translateZ(var(--z)) scale(var(--s));
+		}
+
+		:global(html:not([data-motion='off'])) .band[data-text] {
+			display: block;
+		}
+	}
+</style>
