@@ -1,0 +1,124 @@
+---
+// Gabarits des images Open Graph (1200 × 630), capturés par scripts/og.mjs.
+// Route de développement uniquement : aucune page n'est générée en production.
+import '../../styles/global.css';
+import { Font } from 'astro:assets';
+import { getProjects } from '@lib/projects';
+import { coverSvg, type Motif } from '@lib/covers';
+
+export async function getStaticPaths() {
+	if (import.meta.env.PROD) return [];
+	const projects = await getProjects();
+	const pages = [
+		{ key: 'accueil', title: 'Evan Hugues', line: 'Ingénieur logiciel, cofondateur et CTO d’Artinova', motif: 'lattice', seed: 3, accent: '#ececec' },
+		{ key: 'projets', title: 'Projets', line: 'Études de cas : stack, infra, fonctionnement, difficultés', motif: 'bulge', seed: 2, accent: '#ececec' },
+		{ key: 'a-propos', title: 'À propos', line: 'Ingénieur logiciel, CTO d’Artinova, diplômé de l’IUT de Valence', motif: 'moire', seed: 4, accent: '#ececec' },
+		{ key: 'contact', title: 'Écrivez-moi', line: 'Un projet sérieux, une opportunité, une question', motif: 'orbit', seed: 6, accent: '#ececec' },
+	] as const;
+	return [
+		...pages.map((p) => ({ params: { key: p.key }, props: p })),
+		...projects.map((p) => ({
+			params: { key: p.id },
+			props: { key: p.id, title: p.data.title, line: p.data.tagline, motif: p.data.cover.motif, seed: p.data.cover.seed, accent: p.data.accent },
+		})),
+	];
+}
+
+interface Props {
+	key: string;
+	title: string;
+	line: string;
+	motif: Motif;
+	seed: number;
+	accent: string;
+}
+
+const { title, line, motif, seed, accent } = Astro.props;
+// Pour les pages génériques, le motif reste monochrome (accent = blanc cassé).
+const svg = coverSvg({ motif, seed, accent: accent === '#ececec' ? '#8e8e92' : accent });
+---
+
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="robots" content="noindex" />
+		<Font cssVariable="--font-mona" preload />
+	</head>
+	<body style={`--accent: ${accent}`}>
+		<main class="og">
+			<div class="cover" set:html={svg} />
+			<div class="text">
+				<p class="who">Evan Hugues · evanhgs.fr</p>
+				<h1 class:list={['title', { long: title.length > 10 }]}>{title}</h1>
+				<p class="line">{line}</p>
+			</div>
+		</main>
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		width: 1200px;
+		height: 630px;
+		overflow: hidden;
+		background: var(--bg);
+	}
+
+	.og {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr 470px;
+		width: 1200px;
+		height: 630px;
+	}
+
+	.cover {
+		grid-column: 2;
+		grid-row: 1;
+		width: 470px;
+		height: 630px;
+	}
+
+	.cover :global(svg) {
+		width: 100%;
+		height: 100%;
+	}
+
+	.text {
+		grid-column: 1;
+		grid-row: 1;
+		display: grid;
+		align-content: space-between;
+		padding: 56px 56px 60px;
+	}
+
+	.who {
+		font-size: 22px;
+		font-weight: 600;
+		font-stretch: 85%;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+
+	.title {
+		font-size: 150px;
+		font-weight: 800;
+		font-stretch: 75%;
+		line-height: 0.84;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
+	}
+
+	.title.long {
+		font-size: 112px;
+	}
+
+	.line {
+		max-width: 28ch;
+		font-size: 30px;
+		line-height: 1.2;
+		color: var(--muted);
+	}
+</style>

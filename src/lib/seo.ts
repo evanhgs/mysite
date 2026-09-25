@@ -77,3 +77,60 @@ export function breadcrumbNode(items: { name: string; path: string }[]): Breadcr
 export function graph(...nodes: Thing[]): Graph {
 	return { '@context': 'https://schema.org', '@graph': nodes as Graph['@graph'] };
 }
+
+type ProjectData = {
+	id: string;
+	title: string;
+	description: string;
+	year: number;
+	stack: string[];
+	languages: string[];
+	repo?: string;
+};
+
+/** Projet : SoftwareSourceCode s'il a un dépôt public, sinon CreativeWork. */
+export function projectNode(p: ProjectData): Thing {
+	const url = abs(`/projets/${p.id}/`);
+	const common = {
+		'@id': `${url}#projet`,
+		name: p.title,
+		description: p.description,
+		url,
+		image: abs(`/og/${p.id}.png`),
+		dateCreated: String(p.year),
+		inLanguage: 'fr-FR',
+		keywords: p.stack.join(', '),
+		author: { '@id': PERSON_ID },
+		creator: { '@id': PERSON_ID },
+	};
+	if (p.repo) {
+		return {
+			'@type': 'SoftwareSourceCode',
+			...common,
+			codeRepository: p.repo,
+			programmingLanguage: p.languages,
+		} as Thing;
+	}
+	return { '@type': 'CreativeWork', ...common } as Thing;
+}
+
+export function projectListNode(items: { id: string; title: string }[]): Thing {
+	return {
+		'@type': 'CollectionPage',
+		'@id': abs('/projets/#page'),
+		url: abs('/projets/'),
+		name: 'Projets',
+		inLanguage: 'fr-FR',
+		isPartOf: { '@id': WEBSITE_ID },
+		about: { '@id': PERSON_ID },
+		mainEntity: {
+			'@type': 'ItemList',
+			itemListElement: items.map((p, i) => ({
+				'@type': 'ListItem',
+				position: i + 1,
+				url: abs(`/projets/${p.id}/`),
+				name: p.title,
+			})),
+		},
+	} as Thing;
+}

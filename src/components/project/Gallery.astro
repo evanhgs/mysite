@@ -1,0 +1,54 @@
+---
+import { Image } from 'astro:assets';
+import type { Projet } from '@lib/projects';
+
+interface Props {
+	items: Projet['data']['gallery'];
+}
+
+const { items } = Astro.props;
+---
+
+{
+	items.length > 0 && (
+		<section class="gallery wrap" aria-label="Captures d’écran">
+			{items.map((item) => (
+				<figure class="shot reveal">
+					<Image src={item.src} alt={item.alt} widths={[480, 820, 1280, 1800]} sizes="(max-width: 900px) 100vw, 60vw" />
+					{item.caption && <figcaption class="label">{item.caption}</figcaption>}
+				</figure>
+			))}
+		</section>
+	)
+}
+
+<style>
+	.gallery {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		align-items: end;
+		gap: clamp(1.5rem, 3vw, 3rem);
+		padding-block: var(--section) 0;
+	}
+
+	.shot {
+		grid-column: span 12;
+		display: grid;
+		gap: 0.9rem;
+	}
+
+	@media (min-width: 900px) {
+		.shot:first-child {
+			grid-column: 1 / span 8;
+		}
+
+		.shot:nth-child(2) {
+			grid-column: 9 / span 4;
+		}
+	}
+
+	.shot :global(img) {
+		width: 100%;
+		border: 1px solid var(--line);
+	}
+</style>

@@ -1,7 +1,51 @@
 ---
 import Base from '@layouts/Base.astro';
+import ProjectList from '@components/projects/ProjectList.astro';
+import { getProjects } from '@lib/projects';
+import { breadcrumbNode, graph, projectListNode } from '@lib/seo';
+
+const projects = await getProjects();
+const jsonLd = graph(
+	projectListNode(projects.map((p) => ({ id: p.id, title: p.data.title }))),
+	breadcrumbNode([
+		{ name: 'Accueil', path: '/' },
+		{ name: 'Projets', path: '/projets/' },
+	]),
+);
 ---
 
-<Base title="Projets — Evan Hugues" description="Études de cas : Artinova, Universe, Valenstagram, Clipboard et d’autres projets, de l’architecture à la mise en production.">
-	<section class="wrap section"><h1 class="h1">Projets</h1></section>
+<Base
+	title="Projets — Evan Hugues, ingénieur logiciel"
+	description="Études de cas d’ingénieur : Artinova, Universe, Valenstagram, Clipboard et plus. Stack, choix d’infra, fonctionnement, difficultés et enseignements."
+	image="/og/projets.png"
+	jsonLd={jsonLd}
+>
+	<header class="head wrap">
+		<h1 class="display">Projets</h1>
+		<p class="lead intro">
+			Du SaaS en production aux outils système. Pour chacun : la stack, les choix d’infra, comment ça marche, la difficulté, et ce
+			que j’en ai retiré.
+		</p>
+	</header>
+
+	<section class="wrap list" aria-label="Tous les projets">
+		<ProjectList projects={projects} grouped />
+	</section>
 </Base>
+
+<style>
+	.head {
+		display: grid;
+		gap: 2rem;
+		padding-top: calc(var(--header-h) + clamp(3rem, 8vw, 7rem));
+		padding-bottom: clamp(3rem, 6vw, 5rem);
+	}
+
+	.intro {
+		max-width: 34ch;
+	}
+
+	.list {
+		padding-bottom: var(--section);
+	}
+</style>
