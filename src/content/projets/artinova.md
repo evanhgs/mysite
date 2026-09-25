@@ -1,15 +1,15 @@
 ---
 title: Artinova
 tagline: Le logiciel des artisans du bâtiment, du premier appel au paiement.
-description: "Artinova, SaaS pour artisans du bâtiment : monolithe modulaire TypeScript, NestJS, BullMQ, PostgreSQL, AWS en Terraform. L’étude de cas du CTO."
-statement: "Transformer des obligations légales en invariants techniques, pour que l’artisan n’ait jamais à y penser."
+description: "Artinova, le SaaS des artisans du bâtiment. Un monolithe modulaire en TypeScript avec NestJS, BullMQ et PostgreSQL, sur AWS avec Terraform."
+statement: "Faire respecter les obligations légales par le logiciel lui-même, pour que l’artisan n’ait jamais à y penser."
 tier: flagship
 order: 1
 year: 2026
-period: 2026 — aujourd’hui
+period: Depuis 2026
 context: Startup, cofondateur
-role: CTO. Architecture, back-end, infrastructure
-status: Bêta ; module 1 le 5 octobre 2026
+role: CTO, en charge de l’architecture, du back-end et de l’infrastructure
+status: En bêta, premier module le 5 octobre 2026
 stack: [TypeScript, Next.js 16, NestJS 12, BullMQ, PostgreSQL 18, Prisma 7, Redis, AWS, Terraform]
 languages: [TypeScript, SQL, HCL]
 links:
@@ -24,7 +24,7 @@ figures:
   - { value: "11", label: "files de jobs, chacune avec sa dead-letter" }
   - { value: "40", label: "décisions d’architecture écrites (ADR)" }
 diagram:
-  title: Architecture d’Artinova, du navigateur aux tiers
+  title: Architecture d’Artinova, du navigateur aux services tiers
   cols: 4
   rows: 3
   nodes:
@@ -50,41 +50,41 @@ diagram:
 
 ## Le contexte
 
-Un artisan du bâtiment, qu’il soit peintre, plombier, électricien ou menuisier, passe ses soirées sur l’administratif : devis griffonnés, relances oubliées, factures refaites dans un tableur. Et une réforme arrive : en France, la facture électronique devient obligatoire à partir de 2026.
+Un artisan du bâtiment, qu’il soit peintre, plombier, électricien ou menuisier, passe une bonne partie de ses soirées sur l’administratif. Il griffonne ses devis, oublie des relances et refait ses factures dans un tableur. Et la facture électronique devient obligatoire en France à partir de 2026.
 
-Avec mon associé, on a commencé par écouter des artisans sur le terrain avant d’écrire une ligne de code. Artinova en est sorti : un seul outil qui suit le client du premier appel jusqu’au paiement. Fiches clients, devis, factures, avoirs, relances, encaissements, espace comptable, et bientôt le planning des tournées.
+Avec mon associé, on a d’abord écouté des artisans sur le terrain, avant d’écrire la moindre ligne de code. Artinova est né de ces échanges. C’est un seul outil qui suit le client du premier appel jusqu’au paiement, avec les fiches clients, les devis, les factures, les avoirs, les relances, les encaissements et un espace pour le comptable. Le planning des tournées arrive ensuite.
 
-Je suis cofondateur et CTO. Je porte l’architecture, le back-end, l’infrastructure et la qualité, et je code tous les jours.
+Je suis cofondateur et CTO. Je m’occupe de l’architecture, du back-end, de l’infrastructure et de la qualité, et je code tous les jours.
 
 ## Stack & infra
 
-- **Un monolithe modulaire, pas des microservices.** Une petite équipe, un seul langage du navigateur à la base de données, un monorepo Turborepo. Les frontières entre modules sont vérifiées par le linter, et les règles métier vivent dans un paquet `domain` sans aucun framework : argent en centimes entiers, machines à états, TVA, droits d’accès.
-- **Web :** Next.js 16 (App Router, React Compiler), TanStack Query, Tailwind. Installable en PWA en attendant l’application mobile.
-- **API :** NestJS 12 sur Express 5, documentation OpenAPI générée depuis les DTO et SDK typé partagé avec le front.
-- **Asynchrone :** BullMQ sur Redis. Tout ce qui est lent ou dépend d’un tiers passe en file : PDF, e-mails, facture électronique, imports, exports. Chaque file a sa dead-letter queue et un outil de rejeu.
-- **Données et services :** PostgreSQL 18 avec Prisma 7, S3 pour les documents, Clerk pour l’authentification, Stripe pour les abonnements, Resend pour les e-mails transactionnels, Sentry pour les erreurs.
-- **Infra :** AWS en région Paris, entièrement décrite en Terraform. ECS Fargate pour le web, l’API et les workers ; RDS PostgreSQL, ElastiCache, S3, un load balancer. Pas de Kubernetes : rien à opérer de plus que nécessaire.
-- **Livraison :** les quatre images sont construites en une passe avec Docker Bake. Le déploiement passe par GitHub Actions et OIDC, donc aucune clé AWS longue durée. Les migrations tournent en tâche ponctuelle seulement quand le schéma change, et le disjoncteur d’ECS annule un mauvais déploiement tout seul. L’environnement de staging s’éteint la nuit : la facture cloud suit l’usage.
+- **Un monolithe modulaire plutôt que des microservices.** On est une petite équipe, avec un seul langage du navigateur à la base de données et un monorepo Turborepo. Le linter vérifie les frontières entre modules, et les règles métier vivent dans un paquet `domain` sans framework. On y trouve l’argent en centimes entiers, les machines à états, la TVA et les droits d’accès.
+- **Le front est en Next.js 16**, avec l’App Router, le React Compiler, TanStack Query et Tailwind. On peut l’installer comme une application en attendant la version mobile.
+- **L’API tourne sur NestJS 12** et Express 5. Sa documentation OpenAPI est générée à partir des DTO, et le front s’appuie sur un SDK typé qui en découle.
+- **Tout ce qui est lent ou dépend d’un tiers passe par une file BullMQ** sur Redis, comme les PDF, les e-mails, la facture électronique, les imports et les exports. Chaque file a sa dead-letter queue et un outil pour rejouer les jobs.
+- **Côté données et services**, on utilise PostgreSQL 18 avec Prisma 7, S3 pour les documents, Clerk pour l’authentification, Stripe pour les abonnements, Resend pour les e-mails et Sentry pour suivre les erreurs.
+- **L’infrastructure est sur AWS**, en région Paris, et entièrement décrite en Terraform. Le web, l’API et les workers tournent sur ECS Fargate, avec RDS PostgreSQL, ElastiCache, S3 et un load balancer. Je n’ai pas voulu de Kubernetes, pour ne rien avoir à exploiter de plus que nécessaire.
+- **Pour livrer**, les quatre images sont construites en une seule passe avec Docker Bake. Le déploiement passe par GitHub Actions avec OIDC, sans aucune clé AWS longue durée. Les migrations ne tournent que quand le schéma change, et le disjoncteur d’ECS annule tout seul un mauvais déploiement. Le staging s’éteint la nuit pour ne pas payer des serveurs qui ne servent à personne.
 
 ## Comment ça marche
 
 Le back-office appelle l’API en HTTPS avec un jeton de session. L’API valide les entrées, applique les règles du domaine et écrit en base dans des transactions courtes.
 
-Tout ce qui peut échouer chez un tiers est poussé dans une file. Un worker génère le PDF du devis ou de la facture (rendu idempotent, empreinte SHA-256, dépôt sur S3), puis enchaîne l’envoi de l’e-mail et le suivi de sa délivrance. Pour la facture électronique, les workers émettent au format Factur-X ou UBL vers une plateforme agréée par l’État, puis récupèrent les statuts et les factures reçues. Les webhooks entrants (paiement, authentification, e-mails) sont vérifiés sur les octets exacts de la requête et dédoublonnés en base.
+Tout ce qui peut échouer chez un tiers part dans une file. Un worker génère le PDF du devis ou de la facture sans jamais produire de doublon, calcule son empreinte SHA-256 et le dépose sur S3. Il enchaîne ensuite l’envoi de l’e-mail et le suivi de sa délivrance. Pour la facture électronique, les workers envoient les factures au format Factur-X ou UBL à une plateforme agréée par l’État, puis récupèrent les statuts et les factures reçues. Les webhooks qui arrivent du paiement, de l’authentification ou des e-mails sont vérifiés sur les octets exacts de la requête, puis dédoublonnés en base.
 
 ## La difficulté
 
-Le droit fiscal ne se négocie pas. Je l’ai donc rendu impossible à contourner, y compris par un bug.
+Le droit fiscal ne se négocie pas, alors j’ai fait en sorte qu’on ne puisse pas le contourner, même à cause d’un bug.
 
-- **Une facture finalisée est immuable.** Ce n’est pas une convention dans le code : des triggers PostgreSQL refusent toute modification des factures finalisées, de leurs lignes, des paiements et du journal d’audit. On corrige par un avoir, comme l’exige la loi.
-- **La numérotation légale est continue, sans trou.** Le numéro n’est attribué qu’à la finalisation, dans la même transaction et sous verrou de ligne (`SELECT … FOR UPDATE`). Un échec ne consomme jamais de numéro, et les avoirs ont leur propre séquence.
-- **Le multi-tenant est garanti par le schéma.** Chaque table métier porte l’identifiant de l’entreprise, des contraintes composées empêchent physiquement une référence croisée, et une suite de tests tente de lire les données d’un autre compte sur les routes de l’API.
-- **La facture électronique passe par un port.** Le fournisseur a déjà changé une fois sans toucher au domaine. Ses jetons d’accès sont chiffrés en AES-256-GCM avec rotation des clés sans interruption, et leur renouvellement est sérialisé : deux rafraîchissements concurrents invalideraient la session.
+- **Une facture finalisée ne peut plus changer.** Ce n’est pas une simple convention dans le code. Des triggers PostgreSQL refusent toute modification des factures finalisées, de leurs lignes, des paiements et du journal d’audit. Pour corriger une erreur, on émet un avoir, comme la loi le demande.
+- **La numérotation légale se suit sans trou.** Le numéro n’est attribué qu’au moment de la finalisation, dans la même transaction et sous un verrou de ligne posé avec `SELECT … FOR UPDATE`. Un échec ne consomme jamais de numéro, et les avoirs ont leur propre séquence.
+- **Le schéma garantit l’isolation entre entreprises.** Chaque table métier porte l’identifiant de l’entreprise, et des contraintes composées empêchent physiquement une référence croisée. Une suite de tests essaie en plus de lire les données d’un autre compte sur les routes de l’API.
+- **La facture électronique passe par un port.** On a déjà changé une fois de fournisseur sans toucher au domaine. Les jetons d’accès sont chiffrés en AES-256-GCM, avec une rotation des clés sans interruption. Leur renouvellement est sérialisé, parce que deux rafraîchissements simultanés invalideraient la session.
 
 ## Ce que ça m’a apporté
 
-- **Penser en invariants :** identifier ce qui ne doit jamais arriver et le garantir au niveau le plus bas possible, la base de données, plutôt que de l’espérer dans le code.
-- **Écrire les décisions.** Chaque choix structurant a son ADR, ce qui permet de le remettre en question plus tard sans refaire toute l’enquête.
-- **Une discipline de CI :** tests d’intégration contre un vrai PostgreSQL, sélection des tests impactés sur les pull requests pour garder un retour rapide, suite complète avant chaque fusion.
-- **Le produit avant la technique.** Les meilleures décisions d’architecture sont venues des entretiens avec les artisans : le mobile d’abord, ne saisir chaque information qu’une seule fois.
-- **Le métier de CTO :** arbitrer chaque semaine entre vitesse et solidité, avec un vrai produit, des utilisateurs en bêta et une date de lancement.
+- **Raisonner en invariants.** J’identifie ce qui ne doit jamais arriver et je le garantis au plus bas niveau possible, souvent dans la base de données, au lieu d’espérer que le code le respecte.
+- **Écrire les décisions.** Chaque choix important a son ADR, ce qui permet de le remettre en question plus tard sans refaire toute l’enquête.
+- **Une CI exigeante.** Les tests d’intégration tournent contre un vrai PostgreSQL. Sur les pull requests, seuls les tests concernés sont lancés pour garder un retour rapide, et la suite complète passe avant chaque fusion.
+- **Le produit avant la technique.** Mes meilleures décisions d’architecture viennent des entretiens avec les artisans, comme penser au mobile d’abord ou ne jamais faire saisir deux fois la même information.
+- **Le rôle de CTO.** Chaque semaine, il faut trouver l’équilibre entre aller vite et construire solide, avec un vrai produit, des utilisateurs en bêta et une date de lancement.

@@ -1,8 +1,8 @@
 ---
 title: Universe
-tagline: Marketplace de beats. Publier, prévisualiser, vendre sous licence.
-description: "Universe, marketplace musicale : Next.js 16, worker audio en Rust sur une file PostgreSQL, uploads S3 pré-signés, Stripe. Architecture et choix d’infra."
-statement: "Un site web et un worker Rust qui ne s’appellent jamais : la base de données et le stockage font le lien."
+tagline: Une marketplace pour publier, écouter et vendre des beats sous licence.
+description: "Universe, une marketplace musicale en Next.js 16, avec un worker audio en Rust branché sur une file PostgreSQL, des uploads S3 pré-signés et Stripe."
+statement: "Le site web et le worker Rust ne s’appellent jamais directement. C’est la base de données et le stockage qui font le lien."
 tier: main
 order: 2
 year: 2026
@@ -16,7 +16,7 @@ links:
 accent: "#8B6CFF"
 cover: { motif: moire, seed: 3 }
 figures:
-  - { value: "3", label: "services : Next.js, worker Rust, FastAPI" }
+  - { value: "3", label: "services écrits dans trois langages" }
   - { value: "39", label: "modèles de données" }
   - { value: "0", label: "appel HTTP entre le site et le worker" }
   - { value: "1", label: "transaction pour publier un extrait" }
@@ -29,7 +29,7 @@ diagram:
     - { id: stripe, label: Stripe, sub: Checkout · webhooks, kind: external, col: 1, row: 0 }
     - { id: browser, label: Navigateur, sub: vendeur ou acheteur, kind: client, col: 0, row: 1 }
     - { id: next, label: Next.js 16, sub: pages · API · webhooks, kind: service, col: 1, row: 1 }
-    - { id: pg, label: PostgreSQL, sub: métier + file de jobs, kind: store, col: 2, row: 1 }
+    - { id: pg, label: PostgreSQL, sub: métier et file de jobs, kind: store, col: 2, row: 1 }
     - { id: worker, label: Worker Rust, sub: ffprobe · ffmpeg, kind: worker, col: 3, row: 1 }
     - { id: s3, label: Stockage S3, sub: sources privées, extraits, kind: store, col: 2, row: 2 }
   edges:
@@ -44,39 +44,39 @@ diagram:
 
 ## Le contexte
 
-Les beatmakers vendent leurs instrumentales sur des places de marché éparpillées, gèrent les licences à la main et peinent à être découverts. Universe réunit tout : publication d’un beat avec ses licences, extrait audio généré automatiquement, achat, téléchargement protégé, messagerie entre acheteur et vendeur, un fil court pour découvrir, et des recommandations.
+Les beatmakers vendent leurs instrumentales sur des sites éparpillés, gèrent les licences à la main et ont du mal à se faire découvrir. Universe regroupe tout au même endroit. On y publie un beat avec ses licences, l’extrait audio se génère tout seul, et l’acheteur paie puis télécharge son fichier de façon protégée. Il y a aussi une messagerie entre acheteur et vendeur, un fil court pour découvrir de nouveaux sons et des recommandations.
 
-C’est un projet personnel mené de bout en bout, du cahier des charges au déploiement.
+C’est un projet personnel que j’ai mené de bout en bout, du cahier des charges jusqu’au déploiement.
 
 ## Stack & infra
 
-- **Next.js 16** et TypeScript pour le site, les API et les webhooks ; **Prisma 7** sur PostgreSQL 18.
-- **Un worker en Rust** (tokio, sqlx) pour l’audio : ffprobe mesure, ffmpeg découpe et encode.
-- **Un service FastAPI** (Python) réservé aux futures fonctions d’IA, isolé derrière une clé d’API.
-- **Redis** pour le rate limiting, Clerk pour l’authentification, Stripe Checkout pour les paiements, Resend pour les e-mails, Sentry pour les erreurs.
-- **Infra :** un VPS avec Docker Compose durci (système de fichiers en lecture seule, toutes les capabilities retirées, `no-new-privileges`), Caddy en frontal (HTTPS, compression, HSTS, en-têtes de sécurité) et un stockage compatible S3 auto-hébergé.
-- **CI/CD :** GitHub Actions teste les trois langages sur chaque pull request, avec des actions épinglées par SHA, puis déploie par SSH.
+- **Next.js 16 et TypeScript** pour le site, les API et les webhooks, avec **Prisma 7** sur PostgreSQL 18.
+- **Un worker en Rust**, écrit avec tokio et sqlx, s’occupe de l’audio. ffprobe mesure les fichiers, ffmpeg les découpe et les encode.
+- **Un service FastAPI en Python** est réservé aux futures fonctions d’IA. Il reste isolé derrière une clé d’API.
+- **Redis** sert au rate limiting, Clerk à l’authentification, Stripe Checkout aux paiements, Resend aux e-mails et Sentry au suivi des erreurs.
+- **Le tout tourne sur un VPS** avec Docker Compose durci. Les conteneurs ont un système de fichiers en lecture seule, aucune capability et l’option `no-new-privileges`. Caddy est en frontal pour le HTTPS, la compression, HSTS et les en-têtes de sécurité, et le stockage compatible S3 est auto-hébergé.
+- **GitHub Actions** teste les trois langages sur chaque pull request, avec des actions épinglées par SHA, puis déploie par SSH.
 
-Pourquoi un VPS plutôt qu’une plateforme serverless : le traitement audio demande ffmpeg, du disque temporaire et du CPU à coût fixe.
+J’ai choisi un VPS plutôt qu’une plateforme serverless parce que le traitement audio a besoin de ffmpeg, de disque temporaire et de CPU à coût fixe.
 
 ## Comment ça marche
 
-Un fichier audio ne transite jamais par le serveur web. Next.js vérifie le rôle vendeur, génère une clé d’objet imprévisible et renvoie une URL S3 pré-signée ; le navigateur dépose le fichier directement dans le bucket.
+Un fichier audio ne passe jamais par le serveur web. Next.js vérifie que l’utilisateur est bien vendeur, génère une clé d’objet imprévisible et renvoie une URL S3 pré-signée. Le navigateur dépose ensuite le fichier directement dans le bucket.
 
-À la publication, Next.js crée le beat et un job de traitement dans PostgreSQL. Le worker Rust interroge la table, réserve un job avec `SELECT … FOR UPDATE SKIP LOCKED` (plusieurs workers peuvent tourner sans se marcher dessus), télécharge la source par une URL signée, mesure sa durée, génère un extrait MP3 avec fondus, le dépose sur S3, puis passe tout à « prêt » dans une seule transaction.
+À la publication, Next.js crée le beat et un job de traitement dans PostgreSQL. Le worker Rust interroge la table et réserve un job avec `SELECT … FOR UPDATE SKIP LOCKED`, ce qui permet de lancer plusieurs workers sans qu’ils se marchent dessus. Il télécharge la source par une URL signée, mesure sa durée, génère un extrait MP3 avec des fondus et le dépose sur S3. Tout passe ensuite à l’état « prêt » dans une seule transaction.
 
-À l’achat : session Stripe Checkout, webhook vérifié, commande payée, droit d’accès créé. Le téléchargement ne délivre qu’une URL signée de courte durée, après contrôle de l’expiration et du nombre de téléchargements restants.
+Au moment de l’achat, une session Stripe Checkout est créée. Quand le webhook arrive, il est vérifié, la commande passe en payée et le droit d’accès est créé. Le téléchargement ne donne qu’une URL signée de courte durée, après avoir contrôlé l’expiration et le nombre de téléchargements restants.
 
 ## La difficulté
 
-- **Découpler sans broker.** Pas de RabbitMQ ni de Kafka : la file est une table PostgreSQL. `SKIP LOCKED` apporte la concurrence ; un compteur de tentatives et un verrou nominatif permettent la reprise après un crash.
-- **Signer S3 à la main.** J’ai implémenté la signature AWS SigV4 en Rust plutôt que d’embarquer un SDK complet pour deux opérations.
-- **Rendre ffmpeg sûr.** Taille maximale des téléchargements, disque temporaire en tmpfs, délais : un fichier piégé ne doit pas faire tomber la machine.
-- **Auditer mon propre code.** J’ai passé le projet au crible (idempotence des webhooks de paiement, redirection ouverte, authentification du service IA, déni de service du worker) et corrigé chaque point. Le rate limiting est atomique grâce à un script Lua exécuté par Redis.
+- **Découpler sans broker.** Je n’ai utilisé ni RabbitMQ ni Kafka, la file est une simple table PostgreSQL. `SKIP LOCKED` gère la concurrence, et un compteur de tentatives associé à un verrou nominatif permet de reprendre le travail après un crash.
+- **Signer les requêtes S3 à la main.** J’ai implémenté la signature AWS SigV4 en Rust plutôt que d’embarquer un SDK complet pour deux opérations.
+- **Rendre ffmpeg sûr.** La taille des téléchargements est limitée, le disque temporaire est en tmpfs et chaque étape a un délai maximum. Un fichier piégé ne doit pas pouvoir faire tomber la machine.
+- **Auditer mon propre code.** J’ai passé le projet au crible, de l’idempotence des webhooks de paiement à la redirection ouverte, en passant par l’authentification du service IA et le déni de service du worker, et j’ai corrigé chaque point. Le rate limiting est atomique grâce à un script Lua exécuté par Redis.
 
 ## Ce que ça m’a apporté
 
-- Choisir le bon langage par service plutôt qu’un langage pour tout : TypeScript pour le produit, Rust pour le calcul et la fiabilité, Python pour l’écosystème IA.
-- Construire des flux asynchrones fiables avec ce qu’on a déjà (PostgreSQL) avant d’ajouter une brique d’infrastructure.
-- Exploiter une vraie production auto-hébergée : conteneurs durcis, proxy, CI/CD.
-- Garder une recommandation explicable : un profil de goût pondéré (genres, tags, humeur, tonalité, tempo) plutôt qu’une boîte noire.
+- J’ai appris à choisir un langage par service au lieu d’un seul pour tout. TypeScript sert au produit, Rust au calcul et à la fiabilité, et Python à l’écosystème IA.
+- Construire des traitements asynchrones fiables avec ce qu’on a déjà, ici PostgreSQL, avant d’ajouter une nouvelle brique d’infrastructure.
+- Faire tourner une vraie production auto-hébergée, avec des conteneurs durcis, un proxy et une chaîne CI/CD.
+- Garder des recommandations explicables. Elles reposent sur un profil de goût pondéré par genre, tags, humeur, tonalité et tempo, et pas sur une boîte noire.

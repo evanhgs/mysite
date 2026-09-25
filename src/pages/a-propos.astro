@@ -14,16 +14,16 @@ const profilePage = {
 } as Thing;
 
 const path = [
-	{ when: '2026 — aujourd’hui', what: `Cofondateur et CTO d’Artinova`, detail: 'Architecture, back-end, infrastructure et qualité d’un SaaS pour les artisans du bâtiment, en bêta.' },
-	{ when: 'Formation', what: `${education.degree}, ${education.school}`, detail: 'Bac+3 en informatique, diplômé. Projets tuteurés pour de vrais commanditaires, dont Aramis.' },
-	{ when: 'Alternance', what: 'Développeur en entreprise', detail: 'Le terrain de Turbo Selector : un problème de performance réel, une solution mathématique.' },
+	{ when: 'Depuis 2026', what: `Cofondateur et CTO d’Artinova`, detail: 'Je m’occupe de l’architecture, du back-end, de l’infrastructure et de la qualité d’un SaaS pour les artisans du bâtiment, en bêta.' },
+	{ when: 'Formation', what: `${education.degree}, ${education.school}`, detail: 'Diplômé d’un bac+3 en informatique, avec des projets menés pour de vrais commanditaires, comme Aramis.' },
+	{ when: 'Alternance', what: 'Développeur en entreprise', detail: 'C’est là qu’est né Turbo Selector, pour régler un vrai problème de performance.' },
 	{ when: 'Stage', what: 'ESN à Lyon', detail: 'Décroché grâce à Telebox, mon premier produit vendu.' },
 ];
 ---
 
 <Base
-	title="À propos — Evan Hugues, ingénieur logiciel"
-	description="Ingénieur logiciel, cofondateur et CTO d’Artinova, diplômé d’un BUT Informatique à l’IUT de Valence. Parcours, méthode de travail et compétences."
+	title="À propos | Evan Hugues"
+	description="Technicien supérieur en informatique et CTO d’Artinova, diplômé d’un BUT Informatique à l’IUT de Valence. Mon parcours, ma méthode et mes compétences."
 	image="/og/a-propos.png"
 	type="profile"
 	jsonLd={graph(profilePage, personNode(), artinovaNode(), breadcrumbNode([{ name: 'Accueil', path: '/' }, { name: 'À propos', path: '/a-propos/' }]))}
@@ -33,8 +33,7 @@ const path = [
 			<p class="label">À propos</p>
 			<h1 class="h1">Du code au serveur qui l’héberge.</h1>
 			<p class="lead">
-				Je suis {site.name}, ingénieur logiciel et cofondateur d’<a class="u-link" href={artinova.url} rel="noopener">Artinova</a>. Je
-				construis des applications de bout en bout, de la conception d’API à l’infrastructure qui les fait tourner.
+				Je suis {site.name}, technicien supérieur en informatique et cofondateur d’<a class="u-link" href={artinova.url} rel="noopener">Artinova</a>. Je construis des applications de bout en bout, de la conception des API jusqu’à l’infrastructure qui les fait tourner.
 			</p>
 		</div>
 		<figure class="necker" aria-hidden="true">
@@ -50,7 +49,7 @@ const path = [
 				<polygon class="face face-a" points="30,70 150,70 150,190 30,190" />
 				<polygon class="face face-b" points="70,30 190,30 190,150 70,150" />
 			</svg>
-			<figcaption class="label">Cube de Necker : deux lectures, un seul dessin.</figcaption>
+			<figcaption class="label">Un cube de Necker. Le même dessin se lit de deux façons.</figcaption>
 		</figure>
 	</header>
 
@@ -59,13 +58,14 @@ const path = [
 		<div class="prose block-body">
 			<p>
 				Je suis cofondateur et CTO d’Artinova, un logiciel qui accompagne les artisans du bâtiment du premier appel client jusqu’au
-				paiement. Je porte l’architecture, le back-end, l’infrastructure et la qualité, et je code tous les jours : un monolithe
-				modulaire en TypeScript, des files de jobs, PostgreSQL, AWS décrit en Terraform, et la facture électronique qui devient
-				obligatoire en 2026.
+				paiement. Je m’occupe de l’architecture, du back-end, de l’infrastructure et de la qualité, et je code tous les jours. Je
+				travaille sur un monolithe modulaire en TypeScript, des files de jobs, PostgreSQL, AWS décrit en Terraform et la facture
+				électronique, qui devient obligatoire en 2026.
 			</p>
 			<p>
-				À côté, je continue de construire : une marketplace musicale avec un worker Rust, un gestionnaire de presse-papiers pour
-				Linux, un bloqueur de publicités. Mes projets ne vivent pas que sur GitHub : ils tournent, et je les exploite.
+				À côté, je continue à construire mes propres projets, comme une marketplace musicale avec un worker en Rust, un gestionnaire
+				de presse-papiers pour Linux ou un bloqueur de publicités. Ils ne restent pas sur GitHub. Ils tournent vraiment, et c’est moi
+				qui les maintiens en production.
 			</p>
 		</div>
 	</section>
@@ -89,11 +89,11 @@ const path = [
 		<h2 id="method" class="block-title">Méthode</h2>
 		<div class="prose block-body">
 			<ul>
-				<li><strong>Des invariants plutôt que des espoirs.</strong> Ce qui ne doit jamais arriver est garanti au plus bas niveau possible : contrainte en base, type, test.</li>
-				<li><strong>Écrire les décisions.</strong> Un choix d’architecture qui compte a son ADR : le contexte, les options, ce qu’on accepte de perdre.</li>
-				<li><strong>Le bon outil par service.</strong> TypeScript pour le produit, Rust pour la fiabilité et le calcul, Python pour la data et l’IA.</li>
-				<li><strong>La sécurité comme réflexe.</strong> Je pratique l’offensif sur Root-Me et Hack The Box, et j’audite mes propres projets : on construit mieux quand on sait casser.</li>
-				<li><strong>Exploiter ce que je livre.</strong> Conteneurs durcis, CI/CD, auto-hébergement, supervision : la mise en production fait partie du travail.</li>
+				<li><strong>Garantir plutôt qu’espérer.</strong> Ce qui ne doit jamais arriver est verrouillé au plus bas niveau possible, par une contrainte en base, un type ou un test.</li>
+				<li><strong>Écrire les décisions.</strong> Chaque choix d’architecture important a son ADR, qui explique le contexte, les options envisagées et ce qu’on accepte de perdre.</li>
+				<li><strong>Le bon outil pour chaque service.</strong> Je prends TypeScript pour le produit, Rust pour la fiabilité et le calcul, et Python pour la data et l’IA.</li>
+				<li><strong>La sécurité comme réflexe.</strong> Je m’entraîne en offensif sur Root-Me et Hack The Box et j’audite mes propres projets. On construit mieux quand on sait comment les choses se cassent.</li>
+				<li><strong>Faire tourner ce que je livre.</strong> Pour moi, la mise en production fait partie du travail, avec des conteneurs durcis, la CI/CD, l’auto-hébergement et la supervision.</li>
 			</ul>
 		</div>
 	</section>

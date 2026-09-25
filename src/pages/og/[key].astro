@@ -10,9 +10,9 @@ export async function getStaticPaths() {
 	if (import.meta.env.PROD) return [];
 	const projects = await getProjects();
 	const pages = [
-		{ key: 'accueil', title: 'Evan Hugues', line: 'Ingénieur logiciel, cofondateur et CTO d’Artinova', motif: 'lattice', seed: 3, accent: '#ececec' },
-		{ key: 'projets', title: 'Projets', line: 'Études de cas : stack, infra, fonctionnement, difficultés', motif: 'bulge', seed: 2, accent: '#ececec' },
-		{ key: 'a-propos', title: 'À propos', line: 'Ingénieur logiciel, CTO d’Artinova, diplômé de l’IUT de Valence', motif: 'moire', seed: 4, accent: '#ececec' },
+		{ key: 'accueil', title: 'Evan Hugues', line: 'Technicien supérieur en informatique, cofondateur et CTO d’Artinova', motif: 'lattice', seed: 3, accent: '#ececec' },
+		{ key: 'projets', title: 'Projets', line: 'La stack, l’infra et les difficultés de chaque projet', motif: 'bulge', seed: 2, accent: '#ececec' },
+		{ key: 'a-propos', title: 'À propos', line: 'Technicien supérieur, CTO d’Artinova, diplômé de l’IUT de Valence', motif: 'moire', seed: 4, accent: '#ececec' },
 		{ key: 'contact', title: 'Écrivez-moi', line: 'Un projet sérieux, une opportunité, une question', motif: 'orbit', seed: 6, accent: '#ececec' },
 	] as const;
 	return [

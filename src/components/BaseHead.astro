@@ -21,7 +21,7 @@ const {
 	description,
 	canonical,
 	image = '/og/accueil.png',
-	imageAlt = `${site.name} — ${site.headline}`,
+	imageAlt = `${site.name}, ${site.headline.charAt(0).toLowerCase()}${site.headline.slice(1)}`,
 	type = 'website',
 	noindex = false,
 } = Astro.props;

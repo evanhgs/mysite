@@ -12,7 +12,7 @@ const linkedin = socials.find((s) => s.label === 'LinkedIn')!;
 ---
 
 <Base
-	title="Contact — Evan Hugues, ingénieur logiciel"
+	title="Contact | Evan Hugues"
 	description="Un projet sérieux, une opportunité ou une question ? Mon adresse e-mail s’affiche après une courte vérification anti-robot, sans cookie ni service tiers."
 	image="/og/contact.png"
 	jsonLd={graph(breadcrumbNode([{ name: 'Accueil', path: '/' }, { name: 'Contact', path: '/contact/' }]))}
@@ -31,7 +31,7 @@ const linkedin = socials.find((s) => s.label === 'LinkedIn')!;
 				<p class="label kicker">Contact</p>
 				<h1 class="question">Un projet sérieux ?<br />Écrivez-moi.</h1>
 				<p class="lead sub">
-					Mon adresse s’affiche après une courte vérification anti-robot. Aucun cookie, aucun service tiers : votre navigateur
+					Mon adresse s’affiche après une courte vérification anti-robot. Il n’y a ni cookie ni service tiers, votre navigateur
 					fait simplement un petit calcul.
 				</p>
 
@@ -53,7 +53,7 @@ const linkedin = socials.find((s) => s.label === 'LinkedIn')!;
 					</div>
 
 					<div class="result" data-result hidden>
-						<p class="label verified">Vérifié. Voici mon adresse :</p>
+						<p class="label verified">C’est vérifié, voici mon adresse.</p>
 						<a class="email" data-email href="#"></a>
 						<div class="actions">
 							<button class="btn btn--solid" type="button" data-copy>Copier l’adresse</button>
@@ -77,7 +77,7 @@ const linkedin = socials.find((s) => s.label === 'LinkedIn')!;
 						))
 					}
 				</ul>
-				<p class="label credit">Anti-robot : preuve de travail au format ALTCHA, sans cookie.</p>
+				<p class="label credit">La vérification repose sur une preuve de travail ALTCHA, sans cookie.</p>
 			</footer>
 		</div>
 	</section>

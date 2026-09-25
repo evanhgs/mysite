@@ -6,12 +6,12 @@ export const site = {
 	name: 'Evan Hugues',
 	givenName: 'Evan',
 	familyName: 'Hugues',
-	role: 'Ingénieur logiciel',
-	headline: 'Ingénieur logiciel, cofondateur et CTO d’Artinova',
+	role: 'Technicien supérieur en informatique',
+	headline: 'Technicien supérieur en informatique, cofondateur et CTO d’Artinova',
 	location: 'Lyon',
 	timeZone: 'Europe/Paris',
 	description:
-		'Ingénieur logiciel, cofondateur et CTO d’Artinova. Architecture, API, temps réel, Rust, TypeScript, infra : simple en surface, rigoureux dessous.',
+		'Technicien supérieur en informatique, cofondateur et CTO d’Artinova. Je conçois des applications web, des API et l’infrastructure qui les fait tourner.',
 } as const;
 
 export const nav = [
@@ -45,26 +45,26 @@ export const education = {
 export const skills = [
 	{
 		domain: 'Langages',
-		text: 'TypeScript et Rust au quotidien, Python pour l’API et la data, SQL partout. PHP, Java et Dart quand le projet le demande.',
+		text: 'J’écris surtout du TypeScript et du Rust, du Python pour les API et la data, et du SQL un peu partout. J’utilise aussi PHP, Java ou Dart quand un projet le demande.',
 	},
 	{
 		domain: 'Back-end',
-		text: 'API REST typées (NestJS, FastAPI, axum), files de jobs (BullMQ, Postgres SKIP LOCKED), temps réel (WebSocket, MQTT, Redis pub/sub), paiements et webhooks idempotents.',
+		text: 'Des API REST typées avec NestJS, FastAPI ou axum, des files de jobs avec BullMQ ou directement dans PostgreSQL, du temps réel en WebSocket, MQTT ou Redis, et des paiements dont les webhooks ne sont jamais traités deux fois.',
 	},
 	{
 		domain: 'Front-end',
-		text: 'Next.js et React côté produit, Astro pour les sites rapides, Three.js et WebGL quand l’interface doit surprendre. Accessibilité et performance comme critères d’acceptation.',
+		text: 'Next.js et React pour les produits, Astro pour les sites rapides, Three.js et WebGL quand l’interface doit surprendre. Je vérifie l’accessibilité et la performance avant de livrer.',
 	},
 	{
 		domain: 'Données',
-		text: 'PostgreSQL (verrous, triggers, contraintes composées), Prisma et Drizzle, SQLite embarqué, Redis, stockage S3.',
+		text: 'Surtout PostgreSQL, avec ses verrous, ses triggers et ses contraintes, via Prisma ou Drizzle. J’utilise aussi SQLite quand la base doit être embarquée, Redis et le stockage S3.',
 	},
 	{
 		domain: 'Infra',
-		text: 'AWS (ECS Fargate, RDS, S3) en Terraform, Docker durci, Caddy et nginx, CI/CD GitHub Actions et GitLab, auto-hébergement sur VPS et homelab.',
+		text: 'AWS décrit en Terraform avec ECS Fargate, RDS et S3, des conteneurs Docker durcis derrière Caddy ou nginx, de la CI/CD sur GitHub Actions et GitLab, et de l’auto-hébergement sur VPS et sur mon homelab.',
 	},
 	{
 		domain: 'Sécurité',
-		text: 'Réflexe offensif entretenu sur Root-Me et Hack The Box : modèle de menace, chiffrement, CSP stricte, isolation multi-tenant, audits de mes propres projets.',
+		text: 'Je m’entraîne en offensif sur Root-Me et Hack The Box. Au quotidien, ça donne des modèles de menace, du chiffrement, des CSP strictes, l’isolation des données entre clients et l’audit de mes propres projets.',
 	},
 ] as const;

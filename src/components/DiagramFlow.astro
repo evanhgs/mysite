@@ -87,7 +87,7 @@ const kindLabel: Record<string, string> = {
 		{diagram.nodes.map((n) => <li>{`${n.label} (${kindLabel[n.kind]}${n.sub ? ', ' + n.sub : ''})`}</li>)}
 		{
 			variants[0].layout.edges.map((e) => (
-				<li>{`${e.fromLabel} ${e.both ? 'échange avec' : 'vers'} ${e.toLabel}${e.label ? ' : ' + e.label : ''}`}</li>
+				<li>{`${e.fromLabel} ${e.both ? 'échange avec' : 'vers'} ${e.toLabel}${e.label ? ', ' + e.label : ''}`}</li>
 			))
 		}
 	</ul>

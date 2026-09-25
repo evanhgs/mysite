@@ -45,7 +45,7 @@ if (root && result) {
 		const started = performance.now();
 		try {
 			const email = await solve(payload, (n) => {
-				status.textContent = `Vérification : essai n° ${n}`;
+				status.textContent = `Vérification en cours, essai n° ${n}`;
 			});
 			// Durée minimale : la vérification doit se lire comme une étape.
 			const wait = 900 - (performance.now() - started);
@@ -93,7 +93,7 @@ if (root && result) {
 			range.selectNodeContents(emailEl);
 			getSelection()?.removeAllRanges();
 			getSelection()?.addRange(range);
-			copied.textContent = 'Sélectionnée : Ctrl+C pour copier.';
+			copied.textContent = 'Adresse sélectionnée, faites Ctrl+C pour la copier.';
 		}
 	});
 }

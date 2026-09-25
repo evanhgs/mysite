@@ -8,7 +8,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 <header class="site-header">
 	<div class="wrap bar">
 		<a class="name" href="/" aria-label={`${site.name}, accueil`}>{site.name}</a>
-		<p class="blurb">Ingénieur logiciel<br />cofondateur et CTO d’Artinova</p>
+		<p class="blurb">Technicien supérieur<span class="blurb-long"> en informatique</span><br />cofondateur et CTO d’Artinova</p>
 		<p class="clock" data-clock-wrap>
 			<span>{site.location}</span>
 			<time data-clock></time>
@@ -116,6 +116,13 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 		grid-column: 4 / span 3;
 		color: var(--muted);
 		line-height: 1.25;
+	}
+
+	/* Entre 900 et 1200 px, la forme courte tient sur deux lignes. */
+	@media (max-width: 1200px) {
+		.blurb-long {
+			display: none;
+		}
 	}
 
 	.clock {

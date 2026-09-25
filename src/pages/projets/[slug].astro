@@ -37,11 +37,10 @@ const jsonLd = graph(
 		{ name: data.title, path: `/projets/${project.id}/` },
 	]),
 );
-const title = `${data.title} — ${data.tagline.replace(/\.$/, '')}`;
 ---
 
 <Base
-	title={title.length > 70 ? `${data.title} · Evan Hugues` : title}
+	title={`${data.title} | Evan Hugues`}
 	description={data.description}
 	image={`/og/${project.id}.png`}
 	imageAlt={`${data.title} : ${data.tagline}`}

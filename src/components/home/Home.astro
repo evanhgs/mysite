@@ -22,7 +22,7 @@ const others = projects.filter((p) => p.id !== 'artinova');
 ---
 
 <Base
-	title={`${site.name} — ${site.headline}`}
+	title={`${site.name}, technicien supérieur et CTO d’Artinova`}
 	description={site.description}
 	canonical={canonical}
 	type="profile"
@@ -38,12 +38,12 @@ const others = projects.filter((p) => p.id !== 'artinova');
 			<div class="hero wrap">
 				<p class="label kicker">{site.role} · {site.location}</p>
 				<h1 id="hero-name" class="display hero-name" data-hero-name>Evan Hugues</h1>
-				<p class="lead hero-line">Cofondateur et CTO d’Artinova. Je conçois des systèmes simples en surface, rigoureux dessous.</p>
+				<p class="lead hero-line">Cofondateur et CTO d’Artinova, je construis des applications web et l’infrastructure qui les fait tourner.</p>
 			</div>
 
 			<ul class="captions wrap" aria-label="L’illusion, pas à pas">
-				<li data-at="revelation">Tout est une question de point de vue. Vu d’ici, ce n’est qu’un nuage de cubes.</li>
-				<li data-at="triangle">Triangle impossible, d’après Oscar Reutersvärd (1934).</li>
+				<li data-at="revelation">Tout dépend du point de vue. D’ici, ce n’est plus qu’un nuage de cubes.</li>
+				<li data-at="triangle">Le triangle impossible d’Oscar Reutersvärd, dessiné en 1934.</li>
 				<li data-at="faille">Il suffisait de tourner autour.</li>
 			</ul>
 
@@ -71,14 +71,14 @@ const others = projects.filter((p) => p.id !== 'artinova');
 
 			<div class="art-body">
 				<p class="art-lead">
-					CRM, devis, factures, relances, paiements et facture électronique 2026, dans un seul outil conçu avec des artisans. Je porte
-					l’architecture, le back-end et l’infrastructure.
+					Devis, factures, relances, paiements, suivi des clients et facture électronique, tout est réuni dans un seul outil conçu avec
+					des artisans. Je m’occupe de l’architecture, du back-end et de l’infrastructure.
 				</p>
 				<ul class="art-points">
-					<li><strong>Des obligations légales devenues des invariants.</strong> Factures immuables garanties par la base, numérotation continue sous verrou.</li>
-					<li><strong>Un monolithe modulaire en TypeScript.</strong> Next.js, NestJS, BullMQ et PostgreSQL : un seul langage, des frontières vérifiées.</li>
-					<li><strong>La facture électronique 2026.</strong> Factur-X et UBL via une plateforme agréée, isolée derrière un port.</li>
-					<li><strong>AWS décrit en Terraform.</strong> ECS Fargate, RDS, déploiements sans clé longue durée, staging éteint la nuit.</li>
+					<li><strong>La loi inscrite dans la base de données.</strong> Une facture finalisée ne peut plus être modifiée, et la numérotation se suit sans jamais sauter de numéro.</li>
+					<li><strong>Un monolithe modulaire en TypeScript.</strong> Next.js, NestJS, BullMQ et PostgreSQL, avec un seul langage et des frontières entre modules vérifiées automatiquement.</li>
+					<li><strong>Prêt pour la facture électronique.</strong> Les factures partent en Factur-X ou en UBL vers une plateforme agréée, qu’on peut changer sans toucher au reste du code.</li>
+					<li><strong>AWS décrit en Terraform.</strong> ECS Fargate et RDS, des déploiements sans clé d’accès permanente et un staging qui s’éteint la nuit.</li>
 				</ul>
 				<div class="art-actions">
 					<a class="btn art-btn" href="/projets/artinova/" data-astro-prefetch>Lire l’étude de cas <span class="arrow" aria-hidden="true">→</span></a>
@@ -102,7 +102,7 @@ const others = projects.filter((p) => p.id !== 'artinova');
 	<section class="selected wrap section" aria-labelledby="selected-title">
 		<header class="sel-head">
 			<h2 id="selected-title" class="h2">Autres projets</h2>
-			<a class="label u-link all" href="/projets/">Tous les projets ({projects.length})</a>
+			<a class="label u-link all" href="/projets/">Voir les {projects.length} projets</a>
 		</header>
 		<ProjectList projects={others.slice(0, 5)} headingLevel={3} />
 	</section>
@@ -111,8 +111,9 @@ const others = projects.filter((p) => p.id !== 'artinova');
 		<h2 id="profile-title" class="h2 prof-title">Du code au serveur qui l’héberge.</h2>
 		<div class="prof-body">
 			<p class="lead">
-				Diplômé d’un BUT Informatique à l’IUT de Valence, je construis des applications de bout en bout : conception d’API, bases de
-				données, interfaces, infrastructure et exploitation. La sécurité traverse tout, et je la pratique aussi en offensif.
+				Technicien supérieur en informatique, diplômé d’un BUT Informatique à l’IUT de Valence, je construis des applications de bout
+				en bout. Je conçois les API et les bases de données, je développe les interfaces et je m’occupe de l’infrastructure et de
+				l’exploitation. La sécurité compte à chaque étape, et je la pratique aussi en offensif.
 			</p>
 			<dl class="skills">
 				{
